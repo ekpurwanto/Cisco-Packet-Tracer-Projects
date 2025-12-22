@@ -1,0 +1,98 @@
+!
+! =========================================================
+! Device   : SW-F2
+! Role     : Access Switch - Floor 2
+! Project  : VIC Modern Hotel Network
+! =========================================================
+!
+
+enable
+configure terminal
+
+! ---------------------------------------------------------
+! BASIC DEVICE SETTINGS
+! ---------------------------------------------------------
+hostname SW-F3
+no ip domain-lookup
+
+! ---------------------------------------------------------
+! VLAN CONFIGURATION
+! ---------------------------------------------------------
+vlan 10
+ name ADMIN
+exit
+
+vlan 20
+ name IT
+exit
+
+
+! ---------------------------------------------------------
+! ACCESS PORT ASSIGNMENTS
+! ---------------------------------------------------------
+
+! VLAN 50 - FINANCE (Fa0/2 - Fa0/3)
+interface range fastEthernet 0/2 - 3
+ switchport mode access
+ switchport access vlan 50
+ spanning-tree portfast
+exit
+
+! VLAN 40 - SALES (Fa0/4 - Fa0/5)
+interface range fastEthernet 0/4 - 5
+ switchport mode access
+ switchport access vlan 40
+ spanning-tree portfast
+exit
+
+! VLAN 30 - HR (Fa0/6 - Fa0/8)
+interface range fastEthernet 0/6 - 8
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+exit
+
+! ---------------------------------------------------------
+! TRUNK PORT CONFIGURATION
+! ---------------------------------------------------------
+! Uplink to Router / Core Switch
+interface fastEthernet 0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 30,40,50
+exit
+
+! ---------------------------------------------------------
+! SAVE CONFIGURATION
+! ---------------------------------------------------------
+end
+write memory
+
+!
+! ========================= END ===========================
+!
+
+
+🧪 COMMAND VERIFIKASI
+
+show vlan brief
+show interfaces trunk
+show running-config
+
+
+=================================
+
+
+SW-F3>en
+SW-F3#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+SW-F3(config)#int fa0/2
+SW-F3(config-if)#switchport port-security
+SW-F3(config-if)#switchport port-security maximum 1
+SW-F3(config-if)#switchport port-security mac-address sticky
+SW-F3(config-if)#switchport port-security violation shutdown
+SW-F3(config-if)#do wr
+Building configuration...
+[OK]
+
+Konfigurasi ini membuat port switch hanya bisa digunakan oleh satu perangkat yang sudah terdaftar (MAC sticky), dan jika ada pelanggaran, port langsung shutdown. Sangat berguna untuk keamanan jaringan kantor atau lab, terutama pada port user yang terhubung ke PC.
+

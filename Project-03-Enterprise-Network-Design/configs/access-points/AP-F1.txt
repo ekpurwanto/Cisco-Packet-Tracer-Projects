@@ -1,0 +1,3 @@
+SSID: Floor1-WiFi
+Security: WPA2-PSK
+Password: floor1@123

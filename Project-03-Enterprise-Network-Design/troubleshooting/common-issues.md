@@ -1,0 +1,4 @@
+- DHCP not assigning IP
+- VLAN mismatch
+- Trunk not configured
+- OSPF neighbor down

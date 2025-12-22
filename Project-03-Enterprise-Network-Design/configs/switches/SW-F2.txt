@@ -1,0 +1,84 @@
+!
+! =========================================================
+! Device   : SW-F2
+! Role     : Access Switch - Floor 2
+! Project  : VIC Modern Hotel Network
+! =========================================================
+!
+
+enable
+configure terminal
+
+! ---------------------------------------------------------
+! BASIC DEVICE SETTINGS
+! ---------------------------------------------------------
+hostname SW-F2
+no ip domain-lookup
+
+! ---------------------------------------------------------
+! VLAN CONFIGURATION
+! ---------------------------------------------------------
+vlan 30
+ name HR
+exit
+
+vlan 40
+ name SALES
+exit
+
+vlan 50
+ name FINANCE
+exit
+
+! ---------------------------------------------------------
+! ACCESS PORT ASSIGNMENTS
+! ---------------------------------------------------------
+
+! VLAN 50 - FINANCE (Fa0/2 - Fa0/3)
+interface range fastEthernet 0/2 - 3
+ switchport mode access
+ switchport access vlan 50
+ spanning-tree portfast
+exit
+
+! VLAN 40 - SALES (Fa0/4 - Fa0/5)
+interface range fastEthernet 0/4 - 5
+ switchport mode access
+ switchport access vlan 40
+ spanning-tree portfast
+exit
+
+! VLAN 30 - HR (Fa0/6 - Fa0/8)
+interface range fastEthernet 0/6 - 8
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+exit
+
+! ---------------------------------------------------------
+! TRUNK PORT CONFIGURATION
+! ---------------------------------------------------------
+! Uplink to Router / Core Switch
+interface fastEthernet 0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 30,40,50
+exit
+
+! ---------------------------------------------------------
+! SAVE CONFIGURATION
+! ---------------------------------------------------------
+end
+write memory
+
+!
+! ========================= END ===========================
+!
+
+
+🧪 COMMAND VERIFIKASI
+
+show vlan brief
+show interfaces trunk
+show running-config
+
+

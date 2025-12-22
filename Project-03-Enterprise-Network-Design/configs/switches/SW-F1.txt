@@ -1,0 +1,99 @@
+!
+! =========================================================
+! Device   : SW-F1
+! Role     : Access Switch - Floor 1
+! Project  : VIC Modern Hotel Network
+! Author   : Network Engineering Team
+! =========================================================
+!
+
+enable
+configure terminal
+
+! ---------------------------------------------------------
+! BASIC DEVICE SETTINGS
+! ---------------------------------------------------------
+hostname SW-F1
+no ip domain-lookup
+
+! ---------------------------------------------------------
+! VLAN CONFIGURATION
+! ---------------------------------------------------------
+vlan 60
+ name LOGISTIK
+exit
+
+vlan 70
+ name STORE
+exit
+
+vlan 80
+ name RECEPTIONIST
+exit
+
+! ---------------------------------------------------------
+! ACCESS PORT ASSIGNMENTS
+! ---------------------------------------------------------
+
+
+SW-F1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+SW-F1(config)#vlan 60
+SW-F1(config-vlan)#name LOGISTIK
+SW-F1(config-vlan)#
+SW-F1(config-vlan)#exit
+SW-F1(config)#vlan 70
+SW-F1(config-vlan)#name STORE
+SW-F1(config-vlan)#exit
+SW-F1(config)#
+SW-F1(config)#vlan 80
+SW-F1(config-vlan)#name RECEPTIONIST
+SW-F1(config-vlan)#exit
+SW-F1(config)#
+SW-F1(config)#
+SW-F1(config)#
+SW-F1(config)#interface range fa0/6-8
+SW-F1(config-if-range)#switchport mode access
+SW-F1(config-if-range)#switchport access vlan 60
+SW-F1(config-if-range)#exit
+SW-F1(config)#
+SW-F1(config)#interface range fa0/2-3
+SW-F1(config-if-range)#switchport mode access
+SW-F1(config-if-range)#switchport access vlan 70
+SW-F1(config-if-range)#exit
+SW-F1(config)#
+SW-F1(config)#interface range fa0/4-5
+SW-F1(config-if-range)#switchport mode access
+SW-F1(config-if-range)#switchport access vlan 80
+SW-F1(config-if-range)#exit
+
+! ---------------------------------------------------------
+! TRUNK PORT CONFIGURATION
+! ---------------------------------------------------------
+! Uplink to Router / Core Switch
+
+
+SW-F1(config)#interface fa0/1
+SW-F1(config-if)#switchport mode trunk
+SW-F1(config-if)#no shut
+SW-F1(config-if)#exit
+SW-F1(config)#do write
+Building configuration...
+[OK]
+
+! ---------------------------------------------------------
+! SAVE CONFIGURATION
+! ---------------------------------------------------------
+end
+write memory
+
+!
+! ========================= END ===========================
+!
+
+
+🧪 COMMAND VERIFIKASI
+
+show vlan brief
+show interfaces trunk
+show running-config

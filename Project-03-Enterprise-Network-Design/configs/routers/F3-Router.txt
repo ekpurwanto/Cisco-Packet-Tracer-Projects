@@ -1,0 +1,235 @@
+🔷 KONFIGURASI DASAR INTERFACE SERIAL
+ciscoF3-ROUTER>en
+F3-ROUTER#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+F3-ROUTER(config)#int se0/2/0
+F3-ROUTER(config-if)#ip address 10.10.10.6 255.255.255.252
+F3-ROUTER(config-if)#exit
+F3-ROUTER(config)#int se0/2/1
+F3-ROUTER(config-if)#ip address 10.10.10.2 255.255.255.252
+F3-ROUTER(config-if)#exit
+F3-ROUTER(config)#do write
+Building configuration...
+[OK]
+F3-ROUTER(config)#exit
+
+🔷 KONFIGURASI VLAN SUBINTERFACES DAN DHCP
+ciscoF3-ROUTER>en
+F3-ROUTER#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+F3-ROUTER(config)#int gig0/0.10
+F3-ROUTER(config-subif)#encapsulation dot1Q 10
+F3-ROUTER(config-subif)#ip address 192.168.1.1 255.255.255.0
+F3-ROUTER(config-subif)#exit
+
+F3-ROUTER(config)#int gig0/0.20
+F3-ROUTER(config-subif)#encapsulation dot1Q 20
+F3-ROUTER(config-subif)#ip address 192.168.2.1 255.255.255.0
+F3-ROUTER(config-subif)#exit
+
+F3-ROUTER(config)#service dhcp
+F3-ROUTER(config)#ip dhcp pool IT
+F3-ROUTER(dhcp-config)#network 192.168.1.0 255.255.255.0
+F3-ROUTER(dhcp-config)#default-router 192.168.1.1
+F3-ROUTER(dhcp-config)#dns-server 192.168.1.1
+F3-ROUTER(dhcp-config)#exit
+
+F3-ROUTER(config)#ip dhcp pool ADMIN
+F3-ROUTER(dhcp-config)#network 192.168.2.0 255.255.255.0
+F3-ROUTER(dhcp-config)#default-router 192.168.2.1
+F3-ROUTER(dhcp-config)#dns-server 192.168.2.1
+F3-ROUTER(dhcp-config)#exit
+
+F3-ROUTER(config)#do write
+Building configuration...
+[OK]
+F3-ROUTER(config)#exit
+
+🔷 KONFIGURASI OSPF
+ciscoF3-ROUTER>enable
+F3-ROUTER#configure terminal
+
+F3-ROUTER(config)#interface serial0/2/0
+F3-ROUTER(config-if)#ip address 10.10.10.6 255.255.255.252
+F3-ROUTER(config-if)#encapsulation ppp
+F3-ROUTER(config-if)#no shutdown
+F3-ROUTER(config-if)#exit
+
+F3-ROUTER(config)#interface serial0/2/1
+F3-ROUTER(config-if)#ip address 10.10.10.2 255.255.255.252
+F3-ROUTER(config-if)#clock rate 64000
+F3-ROUTER(config-if)#encapsulation ppp
+F3-ROUTER(config-if)#no shutdown
+F3-ROUTER(config-if)#exit
+
+F3-ROUTER(config)#interface gigabitEthernet0/0
+F3-ROUTER(config-if)#no shutdown
+F3-ROUTER(config-if)#exit
+
+F3-ROUTER(config)#interface gigabitEthernet0/0.10
+F3-ROUTER(config-subif)#encapsulation dot1Q 10
+F3-ROUTER(config-subif)#ip address 192.168.1.1 255.255.255.0
+F3-ROUTER(config-subif)#exit
+
+F3-ROUTER(config)#interface gigabitEthernet0/0.20
+F3-ROUTER(config-subif)#encapsulation dot1Q 20
+F3-ROUTER(config-subif)#ip address 192.168.2.1 255.255.255.0
+F3-ROUTER(config-subif)#exit
+
+F3-ROUTER(config)#router ospf 10
+F3-ROUTER(config-router)#network 10.10.10.0 0.0.0.3 area 0
+F3-ROUTER(config-router)#network 10.10.10.4 0.0.0.3 area 0
+F3-ROUTER(config-router)#network 192.168.1.0 0.0.0.255 area 0
+F3-ROUTER(config-router)#network 192.168.2.0 0.0.0.255 area 0
+F3-ROUTER(config-router)#exit
+F3-ROUTER(config)#exit
+
+F3-ROUTER#write memory
+
+🔷 KONFIGURASI SSH
+ciscoF3-ROUTER>en
+F3-ROUTER#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+F3-ROUTER(config)#ip domain-name hotel
+F3-ROUTER(config)#crypto key generate rsa
+The name for the keys will be: F3-ROUTER.hotel
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+F3-ROUTER(config)#line vty 0 15
+F3-ROUTER(config-line)#login local
+F3-ROUTER(config-line)#transport input ssh
+F3-ROUTER(config-line)#exit
+F3-ROUTER(config)#do write
+Building configuration...
+[OK]
+F3-ROUTER(config)#exit
+
+🔧 TROUBLESHOOTING GUIDE
+1️⃣ Cek Status Interface
+ciscoRouter#show ip interface brief
+Yang harus dicek:
+
+✅ Status harus up/up (bukan up/down atau down/down)
+✅ IP address sudah benar sesuai topologi
+
+Solusi jika down:
+ciscoRouter(config)#interface [interface_name]
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+2️⃣ Cek OSPF Neighbor
+ciscoRouter#show ip ospf neighbor
+Yang harus terlihat:
+
+✅ State harus FULL/- atau FULL/DR atau FULL/BDR
+✅ Semua neighbor muncul
+
+Solusi jika neighbor tidak muncul:
+ciscoRouter(config)#router ospf 10
+Router(config-router)#network [network] [wildcard] area 0
+Router(config-router)#exit
+Cek OSPF process ID harus sama di semua router:
+ciscoRouter#show ip protocols
+
+3️⃣ Cek Routing Table
+ciscoRouter#show ip route
+Yang harus terlihat:
+
+✅ Kode O untuk OSPF routes
+✅ Semua network remote harus ada
+
+Solusi jika tidak ada OSPF routes:
+
+Pastikan OSPF neighbor sudah FULL
+Pastikan network statement sudah benar
+
+
+4️⃣ Test Konektivitas
+ciscoRouter#ping [IP_address]
+Test sequence:
+
+Ping ke interface tetangga langsung (next hop)
+Ping ke network remote
+
+Jika ping gagal:
+ciscoRouter#traceroute [IP_address]
+```
+
+---
+
+### 5️⃣ Masalah Line Protocol Down
+
+**Gejala:**
+```
+Serial0/1/0 is up, line protocol is down
+Penyebab dan Solusi:
+A. Clock Rate Belum Di-set (di DCE)
+ciscoRouter(config)#interface serial0/x/x
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Cek apakah interface adalah DCE:
+ciscoRouter#show controllers serial0/x/x
+Cari kata "DCE" atau "DTE"
+B. Encapsulation Tidak Match
+ciscoRouter#show interfaces serial0/x/x | include Encapsulation
+Ubah ke PPP jika HDLC bermasalah:
+ciscoRouter(config)#interface serial0/x/x
+Router(config-if)#encapsulation ppp
+Router(config-if)#no shutdown
+PENTING: Encapsulation harus sama di kedua sisi (F1 dan F2 harus sama-sama PPP atau HDLC)
+C. IP Address Tidak Satu Subnet
+Cek subnet dengan kalkulator:
+
+10.10.10.8/30 → Range: 10.10.10.8-11
+10.10.10.0/30 → Range: 10.10.10.0-3
+10.10.10.4/30 → Range: 10.10.10.4-7
+
+Kedua router harus dalam range yang sama!
+
+6️⃣ Reset Interface (Jika Semua Gagal)
+ciscoRouter(config)#interface serial0/x/x
+Router(config-if)#shutdown
+Router(config-if)#exit
+Router(config)#exit
+Tunggu 10 detik
+ciscoRouter(config)#interface serial0/x/x
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+7️⃣ Verifikasi Clock Rate (DCE Side)
+ciscoRouter#show controllers serial0/x/x
+```
+
+**Harus terlihat:**
+```
+DCE V.35, clock rate 64000
+Jika tidak ada clock rate:
+ciscoRouter(config)#interface serial0/x/x
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+
+8️⃣ Cek Konfigurasi Running
+ciscoRouter#show running-config
+Router#show running-config | section ospf
+Router#show running-config | section interface
+
+9️⃣ OSPF Tidak Terbentuk
+Cek OSPF Process ID:
+ciscoRouter#show ip protocols
+Pastikan semua router menggunakan OSPF process ID yang sama (dalam kasus ini: 10)
+Cek OSPF Network Statement:
+ciscoRouter#show running-config | section ospf
+
+🔟 Tips Packet Tracer
+
+Gunakan Mode Simulation untuk melihat packet flow
+Tunggu 30-60 detik setelah konfigurasi
+Save dan Reload file jika interface tetap down
+Pastikan kabel DCE terpasang di router yang benar (F1 dan F3)
+Gunakan PPP lebih stabil daripada HDLC di Packet Tracer
