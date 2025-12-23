@@ -1,0 +1,79 @@
+===========================
+INITIAL SWITCH SETUP
+===========================
+
+Switch> en
+Switch# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+Switch(config)# hostname MAIN-SWICTH-L3
+
+
+=========================================================
+ACCESS PORT CONFIGURATION
+=========================================================
+
+MAIN-SWICTH-L3> en
+MAIN-SWICTH-L3# conf t
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/2
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 10
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/3
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 20
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/4
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 30
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/5
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 40
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/6
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 50
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/7
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 60
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/8
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 70
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/9
+MAIN-SWICTH-L3(config-if)# switchport mode access
+MAIN-SWICTH-L3(config-if)# switchport access vlan 80
+MAIN-SWICTH-L3(config-if)# exit
+
+MAIN-SWICTH-L3(config)# do write
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes
+[OK]
+
+
+=========================================================
+TRUNK PORT CONFIGURATION
+=========================================================
+
+MAIN-SWICTH-L3> en
+MAIN-SWICTH-L3# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+MAIN-SWICTH-L3(config)# interface gigabitEthernet1/0/1
+MAIN-SWICTH-L3(config-if)# switchport mode trunk
+
+MAIN-SWICTH-L3(config)# do write
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes
+[OK]

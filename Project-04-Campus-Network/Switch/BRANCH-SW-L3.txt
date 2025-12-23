@@ -1,0 +1,42 @@
+===========================
+INITIAL SWITCH SETUP
+===========================
+
+Switch> en
+Switch# conf t
+Switch(config)# hostname BRANCH-SW-L3
+
+
+=========================================================
+ACCESS PORT CONFIGURATION
+=========================================================
+
+BRANCH-SW-L3(config)# interface gigabitEthernet1/0/2
+BRANCH-SW-L3(config-if)# switchport mode access
+BRANCH-SW-L3(config-if)# switchport access vlan 90
+BRANCH-SW-L3(config-if)# exit
+
+BRANCH-SW-L3(config)# interface gigabitEthernet1/0/3
+BRANCH-SW-L3(config-if)# switchport mode access
+BRANCH-SW-L3(config-if)# switchport access vlan 100
+BRANCH-SW-L3(config-if)# exit
+
+BRANCH-SW-L3(config)# do write
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes
+[OK]
+
+
+=========================================================
+TRUNK PORT CONFIGURATION
+=========================================================
+
+BRANCH-SW-L3(config)# interface gigabitEthernet1/0/1
+BRANCH-SW-L3(config-if)# switchport mode trunk
+BRANCH-SW-L3(config-if)# no shutdown
+BRANCH-SW-L3(config-if)# exit
+
+BRANCH-SW-L3(config)# do write
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes
+[OK]

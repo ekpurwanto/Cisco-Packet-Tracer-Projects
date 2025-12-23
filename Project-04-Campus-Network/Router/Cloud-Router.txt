@@ -1,0 +1,60 @@
+===========================
+INITIAL ROUTER SETUP
+===========================
+
+Router> en
+Router# conf t
+Router(config)# hostname CLOUD
+CLOUD(config)# interface gigabitEthernet0/0
+CLOUD(config-if)# no shutdown
+
+CLOUD(config-if)# interface serial0/1/0
+CLOUD(config-if)# no shutdown
+CLOUD(config-if)# do write
+Building configuration...
+[OK]
+
+
+=========================================================
+IP ADDRESS CONFIGURATION
+=========================================================
+
+CLOUD> en
+CLOUD# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+CLOUD(config)# interface serial0/1/0
+CLOUD(config-if)# ip address 10.10.10.6 255.255.255.252
+CLOUD(config-if)# exit
+
+CLOUD(config)# interface gigabitEthernet0/0
+CLOUD(config-if)# ip address 20.0.0.1 255.255.255.252
+CLOUD(config-if)# exit
+
+CLOUD(config)# do write
+Building configuration...
+[OK]
+
+
+=========================================================
+DYNAMIC ROUTING – RIP VERSION 2
+=========================================================
+
+Dynamic Routing using RIPv2 between Branch and Main Router  
+Agar jaringan berbeda bisa saling berkomunikasi
+
+---------------------------------------------------------
+
+CLOUD> en
+CLOUD# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+CLOUD(config)# router rip
+CLOUD(config-router)# version 2
+CLOUD(config-router)# network 20.0.0.0
+CLOUD(config-router)# network 10.10.10.4
+CLOUD(config-router)# exit
+
+CLOUD(config)# do write
+Building configuration...
+[OK]

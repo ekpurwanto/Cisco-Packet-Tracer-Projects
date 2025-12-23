@@ -1,0 +1,23 @@
+===========================
+INITIAL SWITCH SETUP
+===========================
+
+Switch> en
+Switch# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+Switch(config)# hostname SW-A-ADMIN
+
+
+=========================================================
+ACCESS PORT CONFIGURATION
+=========================================================
+
+SW-A-ADMIN(config)# interface range fastEthernet0/1-24
+SW-A-ADMIN(config-if-range)# switchport mode access
+SW-A-ADMIN(config-if-range)# switchport access vlan 10
+% Access VLAN does not exist. Creating vlan 10
+
+SW-A-ADMIN(config-if-range)# do write
+Building configuration...
+[OK]

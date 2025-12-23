@@ -1,0 +1,23 @@
+===========================
+INITIAL SWITCH SETUP
+===========================
+
+Switch> en
+Switch# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+Switch(config)# hostname SW-C-LAB-STUDENT
+
+
+=========================================================
+ACCESS PORT CONFIGURATION
+=========================================================
+
+SW-C-LAB-STUDENT(config)# interface range fastEthernet0/1-24
+SW-C-LAB-STUDENT(config-if-range)# switchport mode access
+SW-C-LAB-STUDENT(config-if-range)# switchport access vlan 70
+% Access VLAN does not exist. Creating vlan 70
+
+SW-C-LAB-STUDENT(config-if-range)# do write
+Building configuration...
+[OK]

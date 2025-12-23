@@ -1,0 +1,201 @@
+===========================
+INITIAL ROUTER SETUP
+===========================
+
+Router> en
+Router# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+Router(config)# hostname MAIN-ROUTER
+
+MAIN-ROUTER(config)# interface gig0/0
+MAIN-ROUTER(config-if)# no shutdown
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up
+
+MAIN-ROUTER(config-if)# interface serial0/1/0
+MAIN-ROUTER(config-if)# no shutdown
+
+%LINK-5-CHANGED: Interface Serial0/1/0, changed state to down
+
+MAIN-ROUTER(config-if)# interface serial0/1/1
+MAIN-ROUTER(config-if)# no shutdown
+
+%LINK-5-CHANGED: Interface Serial0/1/1, changed state to down
+%LINK-5-CHANGED: Interface Serial0/1/0, changed state to up
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Serial0/1/0, changed state to up
+
+MAIN-ROUTER(config-if)# do write
+Building configuration...
+[OK]
+
+%LINK-5-CHANGED: Interface Serial0/1/1, changed state to up
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Serial0/1/1, changed state to up
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0, changed state to up
+
+MAIN-ROUTER con0 is now available
+Press RETURN to get started.
+
+=========================================================
+CLOCK RATE CONFIGURATION (DCE)
+=========================================================
+
+MAIN-ROUTER> en
+MAIN-ROUTER# conf t
+
+MAIN-ROUTER(config)# interface serial0/1/1
+MAIN-ROUTER(config-if)# clock rate 64000
+
+MAIN-ROUTER(config-if)# interface serial0/1/0
+MAIN-ROUTER(config-if)# clock rate 64000
+
+MAIN-ROUTER(config-if)# do write
+Building configuration...
+[OK]
+
+=========================================================
+IP ADDRESS CONFIGURATION (SERIAL)
+=========================================================
+
+MAIN-ROUTER> en
+MAIN-ROUTER# conf t
+
+MAIN-ROUTER(config)# interface serial0/1/1
+MAIN-ROUTER(config-if)# ip address 10.10.10.1 255.255.255.252
+MAIN-ROUTER(config-if)# exit
+
+MAIN-ROUTER(config)# interface serial0/1/0
+MAIN-ROUTER(config-if)# ip address 10.10.10.5 255.255.255.252
+MAIN-ROUTER(config-if)# exit
+
+MAIN-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+=========================================================
+KONFIGURASI PORT VLAN (ROUTER-ON-A-STICK)
+=========================================================
+
+MAIN-ROUTER> en
+MAIN-ROUTER# conf t
+MAIN-ROUTER(config)# interface gig0/0.10
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 10
+MAIN-ROUTER(config-subif)# ip address 192.168.1.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.20
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 20
+MAIN-ROUTER(config-subif)# ip address 192.168.2.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.30
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 30
+MAIN-ROUTER(config-subif)# ip address 192.168.3.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.40
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 40
+MAIN-ROUTER(config-subif)# ip address 192.168.4.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.50
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 50
+MAIN-ROUTER(config-subif)# ip address 192.168.5.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.60
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 60
+MAIN-ROUTER(config-subif)# ip address 192.168.6.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.70
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 70
+MAIN-ROUTER(config-subif)# ip address 192.168.7.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# interface gig0/0.80
+MAIN-ROUTER(config-subif)# encapsulation dot1Q 80
+MAIN-ROUTER(config-subif)# ip address 192.168.8.1 255.255.255.0
+MAIN-ROUTER(config-subif)# exit
+
+MAIN-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+=========================================================
+KONFIGURASI DHCP
+=========================================================
+
+MAIN-ROUTER(config)# service dhcp
+
+MAIN-ROUTER(config)# ip dhcp pool Admin-pool
+ network 192.168.1.0 255.255.255.0
+ default-router 192.168.1.1
+ dns-server 192.168.1.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool HR-pool
+ network 192.168.2.0 255.255.255.0
+ default-router 192.168.2.1
+ dns-server 192.168.2.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool Finance-pool
+ network 192.168.3.0 255.255.255.0
+ default-router 192.168.3.1
+ dns-server 192.168.3.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool Bussiness-pool
+ network 192.168.4.0 255.255.255.0
+ default-router 192.168.4.1
+ dns-server 192.168.4.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool E&C-pool
+ network 192.168.5.0 255.255.255.0
+ default-router 192.168.5.1
+ dns-server 192.168.5.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool A&D-pool
+ network 192.168.6.0 255.255.255.0
+ default-router 192.168.6.1
+ dns-server 192.168.6.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool StudentLabA-pool
+ network 192.168.7.0 255.255.255.0
+ default-router 192.168.7.1
+ dns-server 192.168.7.1
+ exit
+
+MAIN-ROUTER(config)# ip dhcp pool ITDept-pool
+ network 192.168.8.0 255.255.255.0
+ default-router 192.168.8.1
+ dns-server 192.168.8.1
+ exit
+
+MAIN-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+=========================================================
+DYNAMIC ROUTING - RIP VERSION 2
+=========================================================
+
+MAIN-ROUTER(config)# router rip
+MAIN-ROUTER(config-router)# version 2
+MAIN-ROUTER(config-router)# network 10.10.10.0
+MAIN-ROUTER(config-router)# network 10.10.10.4
+MAIN-ROUTER(config-router)# network 192.168.1.0
+MAIN-ROUTER(config-router)# network 192.168.2.0
+MAIN-ROUTER(config-router)# network 192.168.3.0
+MAIN-ROUTER(config-router)# network 192.168.4.0
+MAIN-ROUTER(config-router)# network 192.168.5.0
+MAIN-ROUTER(config-router)# network 192.168.6.0
+MAIN-ROUTER(config-router)# network 192.168.7.0
+MAIN-ROUTER(config-router)# network 192.168.8.0
+
+MAIN-ROUTER(config)# do write
+Building configuration...
+[OK]

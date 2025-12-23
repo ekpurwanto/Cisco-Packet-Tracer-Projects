@@ -1,0 +1,26 @@
+===========================
+INITIAL SWITCH SETUP
+===========================
+
+Switch# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+Switch(config)# hostname SW-B-E&C
+
+
+=========================================================
+ACCESS PORT CONFIGURATION
+=========================================================
+
+SW-B-E&C(config)# switchport mode access
+                  ^
+% Invalid input detected at '^' marker.
+
+SW-B-E&C(config)# interface range fastEthernet0/1-24
+SW-B-E&C(config-if-range)# switchport mode access
+SW-B-E&C(config-if-range)# switchport access vlan 50
+% Access VLAN does not exist. Creating vlan 50
+
+SW-B-E&C(config-if-range)# do write
+Building configuration...
+[OK]

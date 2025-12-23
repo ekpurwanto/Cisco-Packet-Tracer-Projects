@@ -1,0 +1,23 @@
+===========================
+INITIAL SWITCH SETUP
+===========================
+
+Switch> en
+Switch# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+Switch(config)# hostname SW-A-FINANCE
+
+
+=========================================================
+ACCESS PORT CONFIGURATION
+=========================================================
+
+SW-A-FINANCE(config)# interface range fastEthernet0/1-24
+SW-A-FINANCE(config-if-range)# switchport mode access
+SW-A-FINANCE(config-if-range)# switchport access vlan 30
+% Access VLAN does not exist. Creating vlan 30
+
+SW-A-FINANCE(config-if-range)# do write
+Building configuration...
+[OK]

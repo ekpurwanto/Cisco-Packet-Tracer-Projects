@@ -1,0 +1,111 @@
+===========================
+INITIAL ROUTER SETUP
+===========================
+
+Router> en
+Router# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+Router(config)# hostname BRANCH-ROUTER
+
+BRANCH-ROUTER(config)# interface gigabitEthernet0/0
+BRANCH-ROUTER(config-if)# no shutdown
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up
+
+BRANCH-ROUTER(config-if)# interface serial0/2/0
+BRANCH-ROUTER(config-if)# no shutdown
+
+%LINK-5-CHANGED: Interface Serial0/2/0, changed state to up
+
+BRANCH-ROUTER(config-if)# do write
+Building configuration...
+[OK]
+
+
+=========================================================
+IP ADDRESS CONFIGURATION (SERIAL)
+=========================================================
+
+BRANCH-ROUTER> en
+BRANCH-ROUTER# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+
+BRANCH-ROUTER(config)# interface serial0/2/0
+BRANCH-ROUTER(config-if)# ip address 10.10.10.2 255.255.255.252
+BRANCH-ROUTER(config-if)# exit
+
+BRANCH-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+
+=========================================================
+KONFIGURASI PORT VLAN (ROUTER-ON-A-STICK)
+=========================================================
+
+BRANCH-ROUTER> en
+BRANCH-ROUTER# conf t
+BRANCH-ROUTER(config)# interface gigabitEthernet0/0.90
+BRANCH-ROUTER(config-subif)# encapsulation dot1Q 90
+BRANCH-ROUTER(config-subif)# ip address 192.168.9.1 255.255.255.0
+BRANCH-ROUTER(config-subif)# exit
+BRANCH-ROUTER(config)# interface gigabitEthernet0/0.100
+
+BRANCH-ROUTER(config-subif)# encapsulation dot1Q 100
+BRANCH-ROUTER(config-subif)# ip address 192.168.10.1 255.255.255.0
+BRANCH-ROUTER(config-subif)# exit
+
+BRANCH-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+
+=========================================================
+KONFIGURASI DHCP
+=========================================================
+
+BRANCH-ROUTER(config)# service dhcp
+
+BRANCH-ROUTER(config)# ip dhcp pool Staff-pool
+ network 192.168.9.0 255.255.255.0
+ default-router 192.168.9.1
+ dns-server 192.168.9.1
+ exit
+
+BRANCH-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+BRANCH-ROUTER(config)# ip dhcp pool StudentLab-pool
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server 192.168.10.1
+ exit
+
+BRANCH-ROUTER(config)# do write
+Building configuration...
+[OK]
+
+
+=========================================================
+DYNAMIC ROUTING – RIP VERSION 2
+=========================================================
+
+Dynamic Routing using RIPv2 between Branch and Main Router  
+Agar jaringan berbeda bisa saling berkomunikasi
+
+---------------------------------------------------------
+
+BRANCH-ROUTER> en
+BRANCH-ROUTER# conf t
+
+BRANCH-ROUTER(config)# router rip
+BRANCH-ROUTER(config-router)# version 2
+BRANCH-ROUTER(config-router)# network 192.168.9.0
+BRANCH-ROUTER(config-router)# network 192.168.10.0
+BRANCH-ROUTER(config-router)# network 10.10.10.0
+BRANCH-ROUTER(config-router)# exit
+
+BRANCH-ROUTER(config)# do write
+Building configuration...
+[OK]
