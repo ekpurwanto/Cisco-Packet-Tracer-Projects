@@ -1,0 +1,108 @@
+enable
+configure terminal
+
+! =========================================================
+! BASIC DEVICE CONFIGURATION
+! =========================================================
+hostname F1-Management-SW              ! Nama perangkat
+no ip domain-lookup                    ! Disable DNS lookup (hindari delay typo)
+ip routing                             ! Aktifkan routing Layer 3
+
+! =========================================================
+! VLAN CONFIGURATION
+! =========================================================
+vlan 10
+ name MANAGEMENT
+vlan 20
+ name HR
+vlan 30
+ name SALES
+vlan 40
+ name FINANCE
+vlan 50
+ name IT
+vlan 60
+ name OPERATION
+vlan 70
+ name SERVER
+vlan 80
+ name CCTV
+vlan 90
+ name WIFI
+vlan 100
+ name GUEST
+vlan 110
+ name ADMIN
+vlan 120
+ name DMZ
+
+! =========================================================
+! SVI (INTER-VLAN ROUTING)
+! =========================================================
+interface vlan 10
+ ip address 192.168.10.1 255.255.255.192   ! Default Gateway VLAN 10
+ ip helper-address 192.168.12.196          ! DHCP Server
+ no shutdown
+
+interface vlan 30
+ ip address 192.168.10.129 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 40
+ ip address 192.168.10.193 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 50
+ ip address 192.168.11.1 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 60
+ ip address 192.168.11.65 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 70
+ ip address 192.168.11.129 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 80
+ ip address 192.168.11.193 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 90
+ ip address 192.168.12.1 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 100
+ ip address 192.168.12.65 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 110
+ ip address 192.168.12.129 255.255.255.192
+ ip helper-address 192.168.12.196
+ no shutdown
+
+interface vlan 120
+ ip address 192.168.12.193 255.255.255.192   ! Gateway DHCP Server
+ no shutdown
+
+! =========================================================
+! TRUNK CONFIGURATION
+! =========================================================
+interface range fa0/1-2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80,90,100,110,120
+ no shutdown
+
+! =========================================================
+! SAVE CONFIGURATION
+! =========================================================
+end
+write memory

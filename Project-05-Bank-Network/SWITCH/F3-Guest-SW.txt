@@ -1,0 +1,50 @@
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F3-Guest-SW
+F3-Guest-SW(config)#
+F3-Guest-SW(config)#banner motd #This F3-Guest Switch#
+F3-Guest-SW(config)#
+F3-Guest-SW(config)#line console 0
+F3-Guest-SW(config-line)#password cisco
+F3-Guest-SW(config-line)#login
+F3-Guest-SW(config-line)#exit
+F3-Guest-SW(config)#
+F3-Guest-SW(config)#line vty 0 15
+F3-Guest-SW(config-line)#password cisco
+F3-Guest-SW(config-line)#login
+F3-Guest-SW(config-line)#exit
+F3-Guest-SW(config)#
+F3-Guest-SW(config)#no ip domain-lookup
+F3-Guest-SW(config)#enable password cisco
+F3-Guest-SW(config)#service password-encryption
+F3-Guest-SW(config)#
+F3-Guest-SW(config)#do wr
+Building configuration...
+[OK]
+F3-Guest-SW(config)#
+
+===============================================
+
+
+F3-Guest-SW(config)#int range fa0/1-2
+F3-Guest-SW(config-if-range)#switchport mode trunk
+
+
+F3-Guest-SW(config-if-range)#no sh
+F3-Guest-SW(config-if-range)#exit
+F3-Guest-SW(config)#
+F3-Guest-SW(config)#vlan 90
+F3-Guest-SW(config-vlan)#name Guest
+F3-Guest-SW(config-vlan)#int range fa0/3-24
+F3-Guest-SW(config-if-range)#switchport mode access
+F3-Guest-SW(config-if-range)#switchport access vlan 90
+F3-Guest-SW(config-if-range)#switchport port-security
+F3-Guest-SW(config-if-range)#switchport port-security maximum 2
+F3-Guest-SW(config-if-range)#switchport port-security mac-address sticky
+F3-Guest-SW(config-if-range)#switchport port-security violation shutdown
+F3-Guest-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F3-Guest-SW(config-if-range)#

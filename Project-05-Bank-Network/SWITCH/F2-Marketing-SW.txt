@@ -1,0 +1,56 @@
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#host name F2-Marketing-SW
+                         ^
+% Invalid input detected at '^' marker.
+	
+Switch(config)#hostname F2-Marketing-SW
+F2-Marketing-SW(config)#banner motd #This F2-marketing Switch#
+F2-Marketing-SW(config)#
+F2-Marketing-SW(config)#line console 0
+F2-Marketing-SW(config-line)#password cisco
+F2-Marketing-SW(config-line)#exit
+F2-Marketing-SW(config)#line console 0
+F2-Marketing-SW(config-line)#password cisco
+F2-Marketing-SW(config-line)#login
+F2-Marketing-SW(config-line)#exit
+F2-Marketing-SW(config)#
+F2-Marketing-SW(config)#line vty 0 15
+F2-Marketing-SW(config-line)#password cisco
+F2-Marketing-SW(config-line)#login
+F2-Marketing-SW(config-line)#exit
+F2-Marketing-SW(config)#
+F2-Marketing-SW(config)#no ip domain-lookup
+F2-Marketing-SW(config)#enable password cisco
+F2-Marketing-SW(config)#service password-encryption
+F2-Marketing-SW(config)#
+F2-Marketing-SW(config)#do wr
+Building configuration...
+[OK]
+F2-Marketing-SW(config)#
+
+=============================================================
+
+
+F2-Marketing-SW(config)#int range fa0/1-2
+F2-Marketing-SW(config-if-range)#switchport mode trunk
+
+
+F2-Marketing-SW(config-if-range)#no sh
+F2-Marketing-SW(config-if-range)#exit
+F2-Marketing-SW(config)#vlan 40
+F2-Marketing-SW(config-vlan)#name Marketing
+F2-Marketing-SW(config-vlan)#int range fa0/3-24
+F2-Marketing-SW(config-if-range)#switchport mode access
+F2-Marketing-SW(config-if-range)#switchport access vlan 40
+F2-Marketing-SW(config-if-range)#switchport port-security
+F2-Marketing-SW(config-if-range)#switchport port-security maximum 2
+F2-Marketing-SW(config-if-range)#switchport port-security mac-address sticky
+F2-Marketing-SW(config-if-range)#switchport port-security violation shutdown
+F2-Marketing-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F2-Marketing-SW(config-if-range)#exit
+F2-Marketing-SW(config)#

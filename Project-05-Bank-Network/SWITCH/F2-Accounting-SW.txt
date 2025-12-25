@@ -1,0 +1,55 @@
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F2-Accounting-SW
+F2-Accounting-SW(config)#banner motd #This F2-Accounting Switch#
+F2-Accounting-SW(config)#line console 0
+F2-Accounting-SW(config-line)#password cisco
+F2-Accounting-SW(config-line)#login
+F2-Accounting-SW(config-line)#exit
+F2-Accounting-SW(config)#line console 0
+F2-Accounting-SW(config-line)#password cisco
+F2-Accounting-SW(config-line)#exit
+F2-Accounting-SW(config)#
+F2-Accounting-SW(config)#line console 0
+F2-Accounting-SW(config-line)#password cisco
+F2-Accounting-SW(config-line)#login
+F2-Accounting-SW(config-line)#exit
+F2-Accounting-SW(config)#
+F2-Accounting-SW(config)#line vty 0 15
+F2-Accounting-SW(config-line)#password cisco
+F2-Accounting-SW(config-line)#login
+F2-Accounting-SW(config-line)#exit
+F2-Accounting-SW(config)#
+F2-Accounting-SW(config)#no ip domain-lookup
+F2-Accounting-SW(config)#enable password cisco
+F2-Accounting-SW(config)#service password-encryption
+F2-Accounting-SW(config)#
+F2-Accounting-SW(config)#do wr
+Building configuration...
+[OK]
+F2-Accounting-SW(config)#
+
+=====================================================
+
+F2-Accounting-SW(config)#int range fa0/1-2
+F2-Accounting-SW(config-if-range)#switchport mode trunk
+
+
+F2-Accounting-SW(config-if-range)#no sh
+F2-Accounting-SW(config-if-range)#exit
+F2-Accounting-SW(config-vlan)#exit
+F2-Accounting-SW(config)#vlan 50
+F2-Accounting-SW(config-vlan)#name Accounting
+F2-Accounting-SW(config-vlan)#int range fa0/3-24
+F2-Accounting-SW(config-if-range)#switchport mode access
+F2-Accounting-SW(config-if-range)#switchport access vlan 50
+F2-Accounting-SW(config-if-range)#switchport port-security
+F2-Accounting-SW(config-if-range)#switchport port-security maximum 2
+F2-Accounting-SW(config-if-range)#switchport port-security mac-address sticky
+F2-Accounting-SW(config-if-range)#switchport port-security violation shutdown
+F2-Accounting-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F2-Accounting-SW(config-if-range)#

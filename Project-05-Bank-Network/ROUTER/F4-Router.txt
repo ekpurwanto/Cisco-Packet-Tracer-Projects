@@ -1,0 +1,125 @@
+
+Router>en
+Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#hostname F4-R-CORE-LAYER
+F4-R-CORE-LAYER(config)#banner motd #This F4-Router-Core Layer#
+F4-R-CORE-LAYER(config)#
+F4-R-CORE-LAYER(config)#line console 0
+F4-R-CORE-LAYER(config-line)#password cisco
+F4-R-CORE-LAYER(config-line)#login
+F4-R-CORE-LAYER(config-line)#exit
+F4-R-CORE-LAYER(config)#
+F4-R-CORE-LAYER(config)#ip domain-name cisco.net
+F4-R-CORE-LAYER(config)#username cisco password cisco
+F4-R-CORE-LAYER(config)#crypto key generate rsa
+The name for the keys will be: F4-R-CORE-LAYER.cisco.net
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+F4-R-CORE-LAYER(config)#line vty 0 15
+*Mar 1 0:17:50.608: %SSH-5-ENABLED: SSH 1.99 has been enabled
+F4-R-CORE-LAYER(config-line)#login local
+F4-R-CORE-LAYER(config-line)#transport input ssh
+F4-R-CORE-LAYER(config-line)#exit
+F4-R-CORE-LAYER(config)#
+F4-R-CORE-LAYER(config)#no ip domain-lookup
+F4-R-CORE-LAYER(config)#eanable password cisco
+                         ^
+% Invalid input detected at '^' marker.
+	
+F4-R-CORE-LAYER(config)#enable password cisco
+F4-R-CORE-LAYER(config)#ervice password-encryption
+                         ^
+% Invalid input detected at '^' marker.
+	
+F4-R-CORE-LAYER(config)#service password-encryption
+F4-R-CORE-LAYER(config)#
+F4-R-CORE-LAYER(config)#do wr
+Building configuration...
+[OK]
+F4-R-CORE-LAYER(config)#
+
+===================================================
+
+conf t
+
+! ================================
+! Serial WAN Interfaces
+! ================================
+
+interface Serial0/2/1
+ description WAN link to F3-R-CORE-LAYER (DCE)
+ ip address 10.10.10.26 255.255.255.252
+ clock rate 64000
+ no shutdown
+ exit
+
+interface Serial0/2/0
+ description WAN link to F2-R-CORE-LAYER
+ ip address 10.10.10.37 255.255.255.252
+ no shutdown
+ exit
+
+! ================================
+! Gigabit Backbone / LAN Interfaces
+! ================================
+
+interface GigabitEthernet0/0
+ description Backbone link to F1-R-CORE-LAYER
+ ip address 10.10.10.30 255.255.255.252
+ no shutdown
+ exit
+
+interface GigabitEthernet0/1
+ description Reserved / Future use
+ no shutdown
+ exit
+
+interface GigabitEthernet0/2
+ description Uplink to F4-SW-L3
+ no shutdown
+ exit
+
+! ================================
+! Save Configuration
+! ================================
+
+end
+write memory
+
+===================================
+🧪 Quick Verification (Optional tapi Direkomendasikan)
+show ip interface brief
+show controllers serial0/2/1
+show cdp neighbors
+
+📊 Ringkasan IP Address – F4-R-CORE-LAYER
+
+| Interface          | IP Address  | Subnet Mask     | Prefix | Fungsi / Terhubung ke            |
+| ------------------ | ----------- | --------------- | ------ | -------------------------------- |
+| Serial0/2/1        | 10.10.10.26 | 255.255.255.252 | /30    | WAN ke **F3-R-CORE-LAYER** (DCE) |
+| Serial0/2/0        | 10.10.10.37 | 255.255.255.252 | /30    | WAN ke **F2-R-CORE-LAYER**       |
+| GigabitEthernet0/0 | 10.10.10.30 | 255.255.255.252 | /30    | Backbone ke **F1-R-CORE-LAYER**  |
+| GigabitEthernet0/1 | 10.10.10.46 | 255.255.255.252 | /30    | Reserved / Future Use            |
+| GigabitEthernet0/2 | 10.10.10.54 | 255.255.255.252 | /30    | Uplink ke **F4-SW-L3**           |
+
+
+====================================================
+
+
+F4-R-CORE-LAYER(config)#router ospf 10
+F4-R-CORE-LAYER(config-router)#network 10.10.10.24 0.0.0.3 area 0
+F4-R-CORE-LAYER(config-router)#network 10.10.10.28 0.0.0.3 area 0
+F4-R-CORE-LAYER(config-router)#network 10.10.10.36 0.0.0.3 area 0
+F4-R-CORE-LAYER(config-router)#network 10.10.10.44 0.0.0.3 area 0
+F4-R-CORE-LAYER(config-router)#network 10.10.10.52 0.0.0.3 area 0
+F4-R-CORE-LAYER(config-router)#exit
+F4-R-CORE-LAYER(config)#do wr
+Building configuration...
+[OK]
+F4-R-CORE-LAYER(config)#

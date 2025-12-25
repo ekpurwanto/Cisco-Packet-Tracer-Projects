@@ -1,0 +1,76 @@
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F1-Management-SW
+F1-Management-SW(config)#banner motd #This Floor1-Management Switch#
+F1-Management-SW(config)#line console 0
+F1-Management-SW(config-line)#password cisco
+F1-Management-SW(config-line)#login
+F1-Management-SW(config-line)#exit
+F1-Management-SW(config)#
+F1-Management-SW(config)#line vty 0 15
+F1-Management-SW(config-line)#password cisco
+F1-Management-SW(config-line)#login
+F1-Management-SW(config-line)#exit
+F1-Management-SW(config)#
+F1-Management-SW(config)#no ip domain-lookup
+F1-Management-SW(config)#enable password cisco
+F1-Management-SW(config)#service password-encryption
+F1-Management-SW(config)#
+F1-Management-SW(config)#do wr
+Building configuration...
+[OK]
+F1-Management-SW(config)#
+
+=====================================================
+
+
+F1-Management-SW(config)#int range fa0/1-2
+F1-Management-SW(config-if-range)#switchport mode trunk        — set port sebagai trunk (multi VLAN)
+F1-Management-SW(config-if-range)#no shutdown                  — mengaktifkan interface
+F1-Management-SW(config-if-range)#exit                          — keluar dari interface range
+
+F1-Management-SW(config)#vlan 10                                — membuat VLAN ID 10
+F1-Management-SW(config-vlan)#name Management                   — memberi nama VLAN
+F1-Management-SW(config-vlan)#exit                              — keluar dari VLAN mode
+
+F1-Management-SW(config)#int range fa0/3-24
+F1-Management-SW(config-if-range)#switchport mode access        — set port sebagai access
+F1-Management-SW(config-if-range)#switchport access vlan 10     — assign ke VLAN 10
+
+F1-Management-SW(config-if-range)#switchport port-security      — aktifkan port security
+F1-Management-SW(config-if-range)#switchport port-security maximum 2
+                                                              — maksimal 2 MAC address
+F1-Management-SW(config-if-range)#switchport port-security mac-address sticky
+                                                              — simpan MAC otomatis
+F1-Management-SW(config-if-range)#switchport port-security violation shutdown
+                                                              — port shutdown jika pelanggaran
+
+F1-Management-SW(config-if-range)#do write                      — simpan konfigurasi
+F1-Management-SW(config-if-range)#exit                          — kembali ke global config
+F1-Management-SW(config)#do sh start
+F1-Management-SW(config)#do sh port-security
+
+int range fa0/1-2                 
+switchport mode trunk             
+no shutdown                       
+exit                              
+
+vlan 10                           — membuat VLAN ID 10
+name Management                   — memberi nama VLAN 10 = Management
+exit                              — keluar dari mode VLAN
+
+int range fa0/3-24                — memilih port untuk end device
+switchport mode access            — mengatur port sebagai access
+switchport access vlan 10         — menghubungkan port ke VLAN 10
+
+switchport port-security          — mengaktifkan port security
+switchport port-security maximum 2 — maksimal 2 MAC address per port
+switchport port-security mac-address sticky
+                                  — MAC address disimpan otomatis
+switchport port-security violation shutdown
+                                  — port shutdown jika terjadi pelanggaran
+
+do write                          — menyimpan konfigurasi
+exit                              — keluar ke global config

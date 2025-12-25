@@ -1,0 +1,50 @@
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F4-Server-SW
+F4-Server-SW(config)#
+F4-Server-SW(config)#banner motd #This F4-Server Switch#
+F4-Server-SW(config)#
+F4-Server-SW(config)#line console 0
+F4-Server-SW(config-line)#password cisco
+F4-Server-SW(config-line)#login
+F4-Server-SW(config-line)#exit
+F4-Server-SW(config)#
+F4-Server-SW(config)#line vty 0 15
+F4-Server-SW(config-line)#password cisco
+F4-Server-SW(config-line)#login
+F4-Server-SW(config-line)#exit
+F4-Server-SW(config)#
+F4-Server-SW(config)#no ip domain-lookup
+F4-Server-SW(config)#enable password cisco
+F4-Server-SW(config)#service password-encryption
+F4-Server-SW(config)#
+F4-Server-SW(config)#do wr
+Building configuration...
+[OK]
+F4-Server-SW(config)#
+
+===================================================
+
+
+F4-Server-SW(config)#int range fa0/1-2
+F4-Server-SW(config-if-range)#switchport mode trunk
+
+
+F4-Server-SW(config-if-range)#no sh
+F4-Server-SW(config-if-range)#exit
+F4-Server-SW(config)#vlan 120
+F4-Server-SW(config-vlan)#name Server
+F4-Server-SW(config-vlan)#exit
+F4-Server-SW(config)#int range fa0/3-24
+F4-Server-SW(config-if-range)#switchport mode access
+F4-Server-SW(config-if-range)#switchport access vlan 120
+F4-Server-SW(config-if-range)#switchport port-security 
+F4-Server-SW(config-if-range)#switchport port-security maximum 2
+F4-Server-SW(config-if-range)#switchport port-security mac-address sticky
+F4-Server-SW(config-if-range)#switchport port-security violation shutdown
+F4-Server-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F4-Server-SW(config-if-range)#

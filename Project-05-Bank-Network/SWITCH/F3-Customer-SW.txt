@@ -1,0 +1,49 @@
+
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F3-Customer-SW
+F3-Customer-SW(config)#
+F3-Customer-SW(config)#banner motd #This F3-Customer Switch#
+F3-Customer-SW(config)#
+F3-Customer-SW(config)#line console 0
+F3-Customer-SW(config-line)#password cisco
+F3-Customer-SW(config-line)#login
+F3-Customer-SW(config-line)#exit
+F3-Customer-SW(config)#
+F3-Customer-SW(config)#line vty 0 15
+F3-Customer-SW(config-line)#password cisco
+F3-Customer-SW(config-line)#login
+F3-Customer-SW(config-line)#exit
+F3-Customer-SW(config)#
+F3-Customer-SW(config)#no ip domain-lookup
+F3-Customer-SW(config)#enable password cisco
+F3-Customer-SW(config)#service password-encryption
+F3-Customer-SW(config)#do wr
+Building configuration...
+[OK]
+F3-Customer-SW(config)#
+
+===================================================
+
+
+F3-Customer-SW(config)#int range fa0/1-2
+F3-Customer-SW(config-if-range)#switchport mode trunk
+
+
+F3-Customer-SW(config-if-range)#no sh
+F3-Customer-SW(config-if-range)#exit
+F3-Customer-SW(config)#vlan 80
+F3-Customer-SW(config-vlan)#name Customer
+F3-Customer-SW(config-vlan)#int range fa0/3-24
+F3-Customer-SW(config-if-range)#switchport mode access
+F3-Customer-SW(config-if-range)#switchport access vlan 80
+F3-Customer-SW(config-if-range)#switchport port-security
+F3-Customer-SW(config-if-range)#switchport port-security maximum 2
+F3-Customer-SW(config-if-range)#switchport port-security mac-address sticky
+F3-Customer-SW(config-if-range)#switchport port-security violation shutdown
+F3-Customer-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F3-Customer-SW(config-if-range)#

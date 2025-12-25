@@ -1,0 +1,154 @@
+
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F4-SW-L3
+F4-SW-L3(config)#
+F4-SW-L3(config)#banner motd #This F4-Switch Layer 3#
+F4-SW-L3(config)#
+F4-SW-L3(config)#line console 0
+F4-SW-L3(config-line)#password cisco
+F4-SW-L3(config-line)#login
+F4-SW-L3(config-line)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#ip domain-name cisco.net
+F4-SW-L3(config)#username cisco password cisco
+F4-SW-L3(config)#crypto key generate rsa
+The name for the keys will be: F4-SW-L3.cisco.net
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+F4-SW-L3(config)#line vty 0 15
+*Mar 1 0:1:11.947: %SSH-5-ENABLED: SSH 1.99 has been enabled
+F4-SW-L3(config-line)#login local
+F4-SW-L3(config-line)#transport input ssh
+F4-SW-L3(config-line)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#no ip domain-lookup
+F4-SW-L3(config)#enable password cisco
+F4-SW-L3(config)#service password-encryption
+F4-SW-L3(config)#
+F4-SW-L3(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F4-SW-L3(config)#
+
+===========================================================
+
+
+This F4-Switch Layer 3
+
+User Access Verification
+
+Password: 
+
+F4-SW-L3>en
+Password: 
+Password: 
+F4-SW-L3#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+F4-SW-L3(config)#int gig1/0/3-8
+                            ^
+% Invalid input detected at '^' marker.
+	
+F4-SW-L3(config)#int range gig1/0/3-8
+F4-SW-L3(config-if-range)#switchport mode trunk
+
+
+
+
+
+
+F4-SW-L3(config-if-range)#exit
+F4-SW-L3(config)#int range gig1/0/1-2
+F4-SW-L3(config-if-range)#no switchport
+F4-SW-L3(config-if-range)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#int gig1/0/1
+F4-SW-L3(config-if)#ip address 10.10.10.53 255.255.255.252
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#int gig1/0/2
+F4-SW-L3(config-if)#ip address 10.10.10.49 255.255.255.252
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F4-SW-L3(config)#
+
+==========================================================
+
+
+F4-SW-L3(config)#ip routing
+F4-SW-L3(config)#router ospf 10
+F4-SW-L3(config-router)#network 10.10.10.52 0.0.0.3 area 0
+F4-SW-L3(config-router)#network 10.10.10.48 0.0.0.3 area 0
+F4-SW-L3(config-router)#
+F4-SW-L3(config-router)#network 192.168.11.128 0.0.0.63 area 0
+F4-SW-L3(config-router)#network 192.168.11.192 0.0.0.63 area 0
+F4-SW-L3(config-router)#network 192.168.12.0 0.0.0.63 area 0
+F4-SW-L3(config-router)#network 192.168.12.64 0.0.0.63 area 0
+F4-SW-L3(config-router)#network 192.168.12.128 0.0.0.63 area 0
+F4-SW-L3(config-router)#network 192.168.12.192 0.0.0.63 area 0
+F4-SW-L3(config-router)#
+F4-SW-L3(config-router)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F4-SW-L3(config-router)#
+
+===========================================================
+
+F4-SW-L3(config)#vlan 70
+F4-SW-L3(config-vlan)#vlan 80
+F4-SW-L3(config-vlan)#vlan 90
+F4-SW-L3(config-vlan)#vlan 100
+F4-SW-L3(config-vlan)#vlan 110
+F4-SW-L3(config-vlan)#vlan 120
+F4-SW-L3(config-vlan)#
+F4-SW-L3(config-vlan)#int vlan 70
+F4-SW-L3(config-if)#no shutdown
+F4-SW-L3(config-if)#ip address 192.168.11.129 255.255.255.192
+F4-SW-L3(config-if)#ip helper-address 192.168.12.196
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#int vlan 80
+F4-SW-L3(config-if)#no shutdown
+F4-SW-L3(config-if)#ip address 192.168.11.193 255.255.255.192
+F4-SW-L3(config-if)#ip helper-address 192.168.12.196
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#int vlan 90
+F4-SW-L3(config-if)#no shutdown
+F4-SW-L3(config-if)#ip address 192.168.12.1 255.255.255.192
+F4-SW-L3(config-if)#ip helper-address 192.168.12.196
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#int vlan 100
+F4-SW-L3(config-if)#no shutdown
+F4-SW-L3(config-if)#ip address 192.168.12.65 255.255.255.192
+F4-SW-L3(config-if)#ip helper-address 192.168.12.196
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#int vlan 110
+F4-SW-L3(config-if)#no shutdown
+F4-SW-L3(config-if)#ip address 192.168.12.129 255.255.255.192
+F4-SW-L3(config-if)#ip helper-address 192.168.12.196
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#int vlan 120
+F4-SW-L3(config-if)#no shutdown
+F4-SW-L3(config-if)#ip address 192.168.12.193 255.255.255.192
+F4-SW-L3(config-if)#exit
+F4-SW-L3(config)#
+F4-SW-L3(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F4-SW-L3(config)#

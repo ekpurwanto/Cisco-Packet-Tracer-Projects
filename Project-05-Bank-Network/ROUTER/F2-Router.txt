@@ -1,0 +1,119 @@
+
+Router>en
+Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#hostname F2-R-CORE-LAYER
+F2-R-CORE-LAYER(config)#
+F2-R-CORE-LAYER(config)#banner motd #This F2-Router-Core Layer#
+F2-R-CORE-LAYER(config)#line console 0
+F2-R-CORE-LAYER(config-line)#password cisco
+F2-R-CORE-LAYER(config-line)#login
+F2-R-CORE-LAYER(config-line)#exit
+F2-R-CORE-LAYER(config)#
+F2-R-CORE-LAYER(config)#ip domain-name cisco.net
+F2-R-CORE-LAYER(config)#username cisco password cisco
+F2-R-CORE-LAYER(config)#crypto key generate rsa
+The name for the keys will be: F2-R-CORE-LAYER.cisco.net
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+F2-R-CORE-LAYER(config)#line vty 0 15
+*Mar 1 0:18:10.21: %SSH-5-ENABLED: SSH 1.99 has been enabled
+F2-R-CORE-LAYER(config-line)#login local
+F2-R-CORE-LAYER(config-line)#transport input ssh
+F2-R-CORE-LAYER(config-line)#exit
+F2-R-CORE-LAYER(config)#
+F2-R-CORE-LAYER(config)#no ip domain-lookup
+F2-R-CORE-LAYER(config)#enable password cisco
+F2-R-CORE-LAYER(config)#service password-encryption
+F2-R-CORE-LAYER(config)#
+F2-R-CORE-LAYER(config)#do wr
+Building configuration...
+[OK]
+F2-R-CORE-LAYER(config)#
+
+===================================================================
+
+conf t
+
+! ================================
+! Gigabit Backbone Interfaces
+! ================================
+
+interface GigabitEthernet0/0
+ description Backbone link to CORE Router
+ ip address 10.10.10.21 255.255.255.252
+ no shutdown
+ exit
+
+interface GigabitEthernet0/1
+ description Link to Distribution / Core Router
+ ip address 10.10.10.10 255.255.255.252
+ no shutdown
+ exit
+
+interface GigabitEthernet0/2
+ description Secondary Backbone Link
+ ip address 10.10.10.14 255.255.255.252
+ no shutdown
+ exit
+
+! ================================
+! Serial WAN Interfaces
+! ================================
+
+interface Serial0/2/0
+ description WAN link to Core Router
+ ip address 10.10.10.18 255.255.255.252
+ no shutdown
+ exit
+
+interface Serial0/2/1
+ description WAN link (DCE)
+ ip address 10.10.10.25 255.255.255.252
+ clock rate 64000
+ no shutdown
+ exit
+
+! ================================
+! Save Configuration
+! ================================
+
+end
+write memory
+
+=================================
+
+🧪 Verifikasi Cepat (Opsional)
+show ip interface brief
+show cdp neighbors
+show controllers serial0/2/1
+
+🧾 Ringkasan IP Address
+
+| Interface | IP Address     | Keterangan     |
+| --------- | -------------- | -------------- |
+| Gi0/0     | 10.10.10.21/30 | Backbone       |
+| Gi0/1     | 10.10.10.10/30 | Core Link      |
+| Gi0/2     | 10.10.10.14/30 | Secondary Link |
+| Se0/2/0   | 10.10.10.18/30 | WAN            |
+| Se0/2/1   | 10.10.10.25/30 | WAN (DCE)      |
+
+==============================================
+
+
+F2-R-CORE-LAYER(config)#router ospf 10
+F2-R-CORE-LAYER(config-router)#network 10.10.10.12 0.0.0.3 area 0
+F2-R-CORE-LAYER(config-router)#network 10.10.10.8 0.0.0.3 area 0
+F2-R-CORE-LAYER(config-router)#network 10.10.10.16 0.0.0.3 area 0
+F2-R-CORE-LAYER(config-router)#network 10.10.10.24 0.0.0.3 area 0
+F2-R-CORE-LAYER(config-router)#network 10.10.10.20 0.0.0.3 area 0
+F2-R-CORE-LAYER(config-router)#exit
+F2-R-CORE-LAYER(config)#do wr
+Building configuration...
+[OK]
+F2-R-CORE-LAYER(config)#

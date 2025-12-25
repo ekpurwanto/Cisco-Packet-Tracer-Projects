@@ -1,0 +1,49 @@
+
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F2-Finance-SW
+F2-Finance-SW(config)#banner motd #This F2-Finance SW#
+F2-Finance-SW(config)#
+F2-Finance-SW(config)#line console 0
+F2-Finance-SW(config-line)#password cisco
+F2-Finance-SW(config-line)#login
+F2-Finance-SW(config-line)#exit
+F2-Finance-SW(config)#
+F2-Finance-SW(config)#line vty 0 15
+F2-Finance-SW(config-line)#password cisco
+F2-Finance-SW(config-line)#login
+F2-Finance-SW(config-line)#exit
+F2-Finance-SW(config)#
+F2-Finance-SW(config)#no ip domain-lookup
+F2-Finance-SW(config)#enable password cisco
+F2-Finance-SW(config)#service password-encryption
+F2-Finance-SW(config)#
+F2-Finance-SW(config)#do wr
+Building configuration...
+[OK]
+F2-Finance-SW(config)#
+
+============================================
+
+
+F2-Finance-SW(config)#int range fa0/1-2
+F2-Finance-SW(config-if-range)#switchport mode trunk
+
+
+F2-Finance-SW(config-if-range)#no sh
+F2-Finance-SW(config-if-range)#exit
+F2-Finance-SW(config)#vlan 60
+F2-Finance-SW(config-vlan)#name Finance
+F2-Finance-SW(config-vlan)#int range fa0/3-24
+F2-Finance-SW(config-if-range)#switchport mode access
+F2-Finance-SW(config-if-range)#switchport access vlan 60
+F2-Finance-SW(config-if-range)#switchport port-security
+F2-Finance-SW(config-if-range)#switchport port-security maximum 2
+F2-Finance-SW(config-if-range)#switchport port-security mac-address sticky
+F2-Finance-SW(config-if-range)#switchport port-security violation shutdown
+F2-Finance-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F2-Finance-SW(config-if-range)#

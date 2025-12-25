@@ -1,0 +1,56 @@
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname F1-Research-SW
+F1-Research-SW(config)##banner motd #This Floor1-Research Switch#
+                       ^
+% Invalid input detected at '^' marker.
+	
+F1-Research-SW(config)#banner motd #This Floor1-Research Switch#
+F1-Research-SW(config)#line console 0
+F1-Research-SW(config-line)#password cisco
+F1-Research-SW(config-line)#login
+F1-Research-SW(config-line)#ex
+% Ambiguous command: "ex"
+F1-Research-SW(config-line)#exit
+F1-Research-SW(config)#line vty 0 15
+F1-Research-SW(config-line)#password cisco
+F1-Research-SW(config-line)#login
+F1-Research-SW(config-line)#exit
+F1-Research-SW(config)#
+F1-Research-SW(config)#no ip domain-lookup
+F1-Research-SW(config)#enable password cisco
+F1-Research-SW(config)#service password-encryption
+F1-Research-SW(config)#
+F1-Research-SW(config)#do wr
+Building configuration...
+[OK]
+F1-Research-SW(config)#
+
+============================================
+
+
+F1-Research-SW(config)#int range fa0/1-2
+F1-Research-SW(config-if-range)#switchport mode trunk
+
+
+F1-Research-SW(config-if-range)#no sh
+F1-Research-SW(config-if-range)#vlan 20
+F1-Research-SW(config-vlan)#name Research
+F1-Research-SW(config-vlan)#int range fa0/3-24
+F1-Research-SW(config-if-range)#switchport mode access
+F1-Research-SW(config-if-range)#switchport access vlan 20
+F1-Research-SW(config-if-range)#switchport port security
+                                                ^
+% Invalid input detected at '^' marker.
+	
+F1-Research-SW(config-if-range)#switchport port-security
+F1-Research-SW(config-if-range)#switchport port-security maximum 2
+F1-Research-SW(config-if-range)#switchport port-security mac-address sticky
+F1-Research-SW(config-if-range)#switchport port-security violation shutdown
+F1-Research-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+F1-Research-SW(config-if-range)#exit
+F1-Research-SW(config)#

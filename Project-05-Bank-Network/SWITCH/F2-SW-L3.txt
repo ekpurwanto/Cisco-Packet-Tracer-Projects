@@ -1,0 +1,158 @@
+Switch>en                                  # perintah ini adalah masuk ke privileged EXEC mode
+Switch#conf t                             # perintah ini adalah masuk ke global configuration mode
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+Switch(config)#hostname F2-SW-L3          # perintah ini adalah mengubah hostname switch
+F2-SW-L3(config)#banner motd #This F2-Layer 3 Switch#
+                                          # perintah ini adalah menampilkan banner peringatan saat login
+
+F2-SW-L3(config)#line console 0            # perintah ini adalah konfigurasi akses melalui console
+F2-SW-L3(config-line)#password cisco       # perintah ini adalah menetapkan password console
+F2-SW-L3(config-line)#login                # perintah ini adalah mengaktifkan autentikasi console
+F2-SW-L3(config-line)#exit                 # perintah ini adalah keluar dari mode line console
+
+F2-SW-L3(config)#ip domain-name cisco.net  # perintah ini adalah menetapkan domain name (syarat SSH)
+F2-SW-L3(config)#username cisco password cisco
+                                          # perintah ini adalah membuat user lokal untuk login SSH
+
+F2-SW-L3(config)#crypto key generate rsa   # perintah ini adalah membuat RSA key untuk SSH
+The name for the keys will be: F2-SW-L3.cisco.net
+                                          # nama key mengikuti hostname + domain
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024   # perintah ini adalah menentukan panjang key RSA
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+F2-SW-L3(config)#line vty 0 15              # perintah ini adalah konfigurasi akses remote (VTY)
+*Mar 1 0:1:11.947: %SSH-5-ENABLED: SSH 1.99 has been enabled
+                                          # informasi bahwa SSH telah aktif
+F2-SW-L3(config-line)#login local           # perintah ini adalah menggunakan user lokal untuk login
+F2-SW-L3(config-line)#transport input ssh   # perintah ini adalah membatasi akses VTY hanya via SSH
+F2-SW-L3(config-line)#exit                  # perintah ini adalah keluar dari mode VTY
+
+F2-SW-L3(config)#no ip domain-lookup        # perintah ini adalah menonaktifkan DNS lookup (hindari delay CLI)
+F2-SW-L3(config)#service password-encryption
+                                          # perintah ini adalah mengenkripsi semua password di config
+
+F2-SW-L3(config)#do wr                      # perintah ini adalah menyimpan konfigurasi ke NVRAM
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+
+F2-SW-L3(config)#                           # konfigurasi selesai
+
+===============================================================
+
+
+
+This F2-Layer 3 Switch
+
+User Access Verification
+
+Password: 
+
+F2-SW-L3>en
+Password: 
+F2-SW-L3#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+F2-SW-L3(config)#int range gig1/0/3-8
+F2-SW-L3(config-if-range)#switchport mode trunk
+
+
+
+
+
+
+F2-SW-L3(config-if-range)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F2-SW-L3(config-if-range)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int range gig1/0/1-2
+F2-SW-L3(config-if-range)#no switchport
+F2-SW-L3(config-if-range)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int gig1/0/2
+F2-SW-L3(config-if)#ip address 10.10.10.5 255.255.255.252
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int gig1/0/1
+F2-SW-L3(config-if)#ip address 10.10.10.13 255.255.255.252
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+
+===========================================================
+
+
+F2-SW-L3(config)#
+F2-SW-L3(config)#ip routing
+F2-SW-L3(config)#router ospf 10
+F2-SW-L3(config-router)#network 10.10.10.12 0.0.0.3 area 0
+F2-SW-L3(config-router)#network 10.10.10.4 0.0.0.3 area 0
+F2-SW-L3(config-router)#
+F2-SW-L3(config-router)#network 192.168.10.0 0.0.0.63 area 0
+F2-SW-L3(config-router)#network 192.168.10.64 0.0.0.63 area 0
+F2-SW-L3(config-router)#network 192.168.10.128 0.0.0.63 area 0
+F2-SW-L3(config-router)#network 192.168.10.192 0.0.0.63 area 0
+F2-SW-L3(config-router)#network 192.168.11.0 0.0.0.63 area 0
+F2-SW-L3(config-router)#network 192.168.11.64 0.0.0.63 area 0
+F2-SW-L3(config-router)#
+F2-SW-L3(config-router)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F2-SW-L3(config-router)#
+
+=============================================================
+
+F2-SW-L3(config-router)#vlan 10
+F2-SW-L3(config-vlan)#vlan 20
+F2-SW-L3(config-vlan)#vlan 30
+F2-SW-L3(config-vlan)#vlan 40
+F2-SW-L3(config-vlan)#vlan 50
+F2-SW-L3(config-vlan)#vlan 60
+F2-SW-L3(config-vlan)#
+F2-SW-L3(config-vlan)#int vlan 10
+F2-SW-L3(config-if)#no shutdown
+F2-SW-L3(config-if)#ip address 192.168.10.1 255.255.255.192
+F2-SW-L3(config-if)#ip helper-address 192.168.12.196
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int vlan 20
+F2-SW-L3(config-if)#no shutdown
+F2-SW-L3(config-if)#ip address 192.168.10.65 255.255.255.192
+F2-SW-L3(config-if)#ip helper-address 192.168.12.196
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int vlan 30
+F2-SW-L3(config-if)#no shutdown
+F2-SW-L3(config-if)#ip address 192.168.10.129 255.255.255.192
+F2-SW-L3(config-if)#ip helper-address 192.168.12.196
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int vlan 40
+F2-SW-L3(config-if)#no shutdown
+F2-SW-L3(config-if)#ip address 192.168.10.193 255.255.255.192
+F2-SW-L3(config-if)#ip helper-address 192.168.12.196
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int vlan 50
+F2-SW-L3(config-if)#no shutdown
+F2-SW-L3(config-if)#ip address 192.168.11.1 255.255.255.192
+F2-SW-L3(config-if)#ip helper-address 192.168.12.196
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#int vlan 60
+F2-SW-L3(config-if)#no shutdown
+F2-SW-L3(config-if)#ip address 192.168.11.65 255.255.255.192
+F2-SW-L3(config-if)#ip helper-address 192.168.12.196
+F2-SW-L3(config-if)#exit
+F2-SW-L3(config)#
+F2-SW-L3(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+F2-SW-L3(config)#

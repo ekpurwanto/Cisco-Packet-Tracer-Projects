@@ -1,0 +1,62 @@
+Switch>en                                # Masuk ke privileged EXEC mode
+Switch#conf t                           # Masuk ke global configuration mode
+Enter configuration commands, one per line. End with CNTL/Z.
+
+hostname F1-HR-SW                       # Mengubah hostname switch
+                                        # Prompt berubah menjadi F1-HR-SW(config)#
+
+banner motd #This Floor1-HR Switch#     # Banner peringatan saat login
+
+! ===============================
+! Console Access Configuration
+! ===============================
+line console 0                          # Konfigurasi akses console
+ password cisco                         # Password console
+ login                                  # Aktifkan autentikasi console
+ exit                                   # Keluar dari mode console
+
+! ===============================
+! VTY (Remote Access) Configuration
+! ===============================
+line vty 0 15                           # Konfigurasi remote access (VTY)
+ password cisco                         # Password VTY
+ login                                  # Aktifkan login VTY
+ exit                                   # Keluar dari mode VTY
+
+! ===============================
+! Basic Security Settings
+! ===============================
+no ip domain-lookup                     # Mematikan DNS lookup (hindari delay CLI)
+enable password cisco                  # Password untuk enable mode
+service password-encryption            # Enkripsi password di konfigurasi
+
+do wr                                  # Simpan konfigurasi ke NVRAM
+Building configuration...
+[OK]
+
+! =====================================================
+! Trunk Port Configuration
+! =====================================================
+interface range fa0/1-2
+ switchport mode trunk                 # Set port sebagai trunk
+ no shutdown                           # Aktifkan interface
+ exit
+
+! =====================================================
+! VLAN HR Configuration
+! =====================================================
+vlan 30
+ name HR                               # Nama VLAN HR
+
+interface range fa0/3-24
+ switchport mode access                # Set port sebagai access
+ switchport access vlan 30             # Assign ke VLAN 30
+ switchport port-security              # Aktifkan port security
+ switchport port-security maximum 2    # Maksimal 2 MAC address
+ switchport port-security mac-address sticky  # Sticky MAC
+ switchport port-security violation shutdown  # Shutdown jika violation
+ do write                              # Simpan konfigurasi
+Building configuration...
+[OK]
+
+exit                                   # Keluar dari konfigurasi interface
