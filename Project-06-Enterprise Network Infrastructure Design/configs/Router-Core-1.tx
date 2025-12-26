@@ -1,0 +1,173 @@
+
+Router>en
+Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#hostname ROUTER-CORE-1
+ROUTER-CORE-1(config)#banner motd#
+                                 ^
+% Invalid input detected at '^' marker.
+	
+ROUTER-CORE-1(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+ROUTER-CORE-1(config)#line console 0
+ROUTER-CORE-1(config-line)#password cisco
+ROUTER-CORE-1(config-line)#login
+ROUTER-CORE-1(config-line)#exit
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#enable password cisco
+ROUTER-CORE-1(config)#service password-encryption
+ROUTER-CORE-1(config)#exit
+ROUTER-CORE-1#
+%SYS-5-CONFIG_I: Configured from console by console
+
+ROUTER-CORE-1#wr
+Building configuration...
+[OK]
+ROUTER-CORE-1#
+ROUTER-CORE-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ROUTER-CORE-1(config)#ip domain name cisco.net
+ROUTER-CORE-1(config)#username admin password cisco
+ROUTER-CORE-1(config)#crypto key generate rsa
+The name for the keys will be: ROUTER-CORE-1.cisco.net
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+ROUTER-CORE-1(config)#
+*Mar 1 2:57:31.765: %SSH-5-ENABLED: SSH 1.99 has been enabled
+ROUTER-CORE-1(config)#line vty 0 15
+ROUTER-CORE-1(config-line)#login local
+ROUTER-CORE-1(config-line)#transport input ssh
+ROUTER-CORE-1(config)#ip ssh version 2
+ROUTER-CORE-1(config-line)#exit
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config)#
+
+========================================================
+
+ROUTER-CORE-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ROUTER-CORE-1(config)#int gig0/0
+ROUTER-CORE-1(config-if)#ip address 172.16.3.146 255.255.255.252
+ROUTER-CORE-1(config-if)#no shutdown
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#int gig0/1
+ROUTER-CORE-1(config-if)#ip address 172.16.3.154 255.255.255.252
+ROUTER-CORE-1(config-if)#no shutdown
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config)#
+
+=================================================================
+
+ROUTER-CORE-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ROUTER-CORE-1(config)#int gig0/0
+ROUTER-CORE-1(config-if)#ip address 172.16.3.146 255.255.255.252
+ROUTER-CORE-1(config-if)#no shutdown
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#int gig0/1
+ROUTER-CORE-1(config-if)#ip address 172.16.3.154 255.255.255.252
+ROUTER-CORE-1(config-if)#no shutdown
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config)#int se0/2/0
+ROUTER-CORE-1(config-if)#clock rate 64000
+ROUTER-CORE-1(config-if)#ip address 195.136.17.5 255.255.255.252
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config)#int se0/2/1
+ROUTER-CORE-1(config-if)#clock rate 64000
+ROUTER-CORE-1(config-if)#ip address 195.136.17.1 255.255.255.252
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config)#
+
+================================================================
+
+ROUTER-CORE-1(config)#int gig0/0
+ROUTER-CORE-1(config-if)#router ospf 10
+ROUTER-CORE-1(config-router)#router-id 3.3.3.3
+ROUTER-CORE-1(config-router)#network 172.16.3.144 0.0.0.3 area 0
+ROUTER-CORE-1(config-router)#network 172.16.3.152 0.0.0.3 area 0
+ROUTER-CORE-1(config-router)#network 195.136.17.0 0.0.0.3 area 0
+ROUTER-CORE-1(config-router)#network 195.136.17.4 0.0.0.3 area 0
+ROUTER-CORE-1(config-router)#
+ROUTER-CORE-1(config-router)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config-router)#
+
+================================================================
+
+OUTER-CORE-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ROUTER-CORE-1(config)#ip nat inside source list 1 int se0/2/0 overload
+ROUTER-CORE-1(config)#ip nat inside source list 1 int se0/2/1 overload
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#access-list 1 permit 172.16.1.0 0.0.0.127
+ROUTER-CORE-1(config)#access-list 1 permit 172.16.1.128 0.0.0.127
+ROUTER-CORE-1(config)#access-list 1 permit 172.16.2.0 0.0.0.127
+ROUTER-CORE-1(config)#access-list 1 permit 172.16.2.128 0.0.0.127
+ROUTER-CORE-1(config)#access-list 1 permit 172.16.3.0 0.0.0.127
+ROUTER-CORE-1(config)#access-list 1 permit 172.16.3.128 0.0.0.15
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#int range gig0/0-1
+ROUTER-CORE-1(config-if-range)#ip nat inside
+ROUTER-CORE-1(config-if-range)#exit
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#int se0/2/0
+ROUTER-CORE-1(config-if)#ip nat outside
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#int se0/2/1
+ROUTER-CORE-1(config-if)#ip nat outside
+ROUTER-CORE-1(config-if)#exit
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]
+ROUTER-CORE-1(config)#
+
+=================================================
+
+ROUTER-CORE-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ROUTER-CORE-1(config)#ip route 0.0.0.0 0.0.0.0 se0/2/0
+%Default route without gateway, if not a point-to-point interface, may impact performance
+ROUTER-CORE-1(config)#ip route 0.0.0.0 0.0.0.0 se0/2/0
+ROUTER-CORE-1(config)#ip route 0.0.0.0 0.0.0.0 se0/2/1 70
+ROUTER-CORE-1(config)#
+ROUTER-CORE-1(config)#do wr
+Building configuration...
+[OK]

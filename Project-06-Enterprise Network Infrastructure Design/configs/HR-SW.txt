@@ -1,0 +1,87 @@
+
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname HR-SW
+HR-SW(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+HR-SW(config)#no ip domain lookup
+HR-SW(config)#line console 0
+HR-SW(config-line)#password cisco
+HR-SW(config-line)#login
+HR-SW(config-line)#exit
+HR-SW(config)#
+HR-SW(config)#enable password cisco
+HR-SW(config)#service password-encryption
+HR-SW(config)#exit
+HR-SW#
+%SYS-5-CONFIG_I: Configured from console by console
+
+HR-SW#wr
+Building configuration...
+[OK]
+HR-SW#
+
+===================================================
+
+HR-SW>en
+Password: 
+HR-SW#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+HR-SW(config)#int range fa0/1-2
+HR-SW(config-if-range)#switchport mode trunk
+
+
+HR-SW(config-if-range)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to up
+
+HR-SW(config-if-range)#exit
+HR-SW(config)#
+HR-SW(config)#vlan 20
+HR-SW(config-vlan)#name HR
+HR-SW(config-vlan)#exit
+HR-SW(config)#
+HR-SW(config)#int range fa0/3-24
+HR-SW(config-if-range)#switchport mode access
+HR-SW(config-if-range)#switchport access vlan 20
+HR-SW(config-if-range)#exit
+HR-SW(config)#
+HR-SW(config)#do wr
+Building configuration...
+[OK]
+HR-SW(config)#vlan 99
+HR-SW(config-vlan)#name BlackHole
+HR-SW(config-vlan)#exit
+HR-SW(config)#int range gig0/1-2
+HR-SW(config-if-range)#switchport mode access
+HR-SW(config-if-range)#switchport access vlan 99
+HR-SW(config-if-range)#shutdown
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to administratively down
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down
+HR-SW(config-if-range)#
+HR-SW(config-if-range)#do wr
+Building configuration...
+[OK]
+HR-SW(config-if-range)#

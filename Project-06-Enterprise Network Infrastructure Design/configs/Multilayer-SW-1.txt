@@ -1,0 +1,214 @@
+
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#hostname MULTILAYER-SW-1
+MULTILAYER-SW-1(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+MULTILAYER-SW-1(config)#line console 0
+MULTILAYER-SW-1(config-line)#password cisco
+MULTILAYER-SW-1(config-line)#login
+MULTILAYER-SW-1(config-line)#exit
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#enable password cisco
+MULTILAYER-SW-1(config)#service password-encryption
+MULTILAYER-SW-1(config)#exit
+MULTILAYER-SW-1#
+%SYS-5-CONFIG_I: Configured from console by console
+
+MULTILAYER-SW-1#wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1#
+
+============================================================
+Config SSH
+===========================================================
+
+
+MULTILAYER-SW-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+MULTILAYER-SW-1(config)#ip domain name
+% Incomplete command.
+MULTILAYER-SW-1(config)#ip domain name cisco.net
+MULTILAYER-SW-1(config)#username admin password cisco
+MULTILAYER-SW-1(config)#crypto key generate rsa
+% You already have RSA keys defined named MULTILAYER-SW-1.cisco.net .
+% Do you really want to replace them? [yes/no]: yes
+The name for the keys will be: MULTILAYER-SW-1.cisco.net
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]
+
+MULTILAYER-SW-1(config)#
+*Mar 1 2:50:12.203: %SSH-5-ENABLED: SSH 1.99 has been enabled
+MULTILAYER-SW-1(config)#line vty 0 15
+MULTILAYER-SW-1(config-line)#login local
+MULTILAYER-SW-1(config-line)#transport input ssh
+MULTILAYER-SW-1(config)#ip ssh version 2
+MULTILAYER-SW-1(config-line)#exit
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#
+
+==========================================================
+
+MULTILAYER-SW-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+MULTILAYER-SW-1(config)#int range gig1/0/3-8
+MULTILAYER-SW-1(config-if-range)#switchport mode trunk
+MULTILAYER-SW-1(config-if-range)#vlan 10
+MULTILAYER-SW-1(config-vlan)#name Sales
+MULTILAYER-SW-1(config-vlan)#vlan 20
+MULTILAYER-SW-1(config-vlan)#name HR
+MULTILAYER-SW-1(config-vlan)#vlan 30
+MULTILAYER-SW-1(config-vlan)#name Finance
+MULTILAYER-SW-1(config-vlan)#vlan 40
+MULTILAYER-SW-1(config-vlan)#name Finance
+VLAN #30 and #40 have an identical name: Finance
+MULTILAYER-SW-1(config-vlan)#vlan 40
+MULTILAYER-SW-1(config-vlan)#name Admin
+MULTILAYER-SW-1(config-vlan)#vlan 50
+MULTILAYER-SW-1(config-vlan)#name ICT
+MULTILAYER-SW-1(config-vlan)#vlan 60
+MULTILAYER-SW-1(config-vlan)#name Server
+MULTILAYER-SW-1(config-vlan)#exit
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#int range gig1/0/1-2
+MULTILAYER-SW-1(config-if-range)#no switchport
+MULTILAYER-SW-1(config-if-range)#
+MULTILAYER-SW-1(config-if-range)#exit
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#
+
+========================================================
+
+MULTILAYER-SW-1>en
+Password: 
+MULTILAYER-SW-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+MULTILAYER-SW-1(config)#int gig1/0/1
+MULTILAYER-SW-1(config-if)#ip address 172.16.3.145 255.255.255.252
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#exit
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#int gig1/0/2
+MULTILAYER-SW-1(config-if)#ip address 172.16.3.149 255.255.255.252
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#exit
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#
+
+==============================================================
+
+MULTILAYER-SW-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+MULTILAYER-SW-1(config)#ip routing
+MULTILAYER-SW-1(config)#router ospf 10
+MULTILAYER-SW-1(config-router)#router-id 2.2.2.2
+MULTILAYER-SW-1(config-router)#network 172.16.1.0 0.0.0.127 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.1.128 0.0.0.127 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.2.0 0.0.0.127 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.2.128 0.0.0.127 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.3.0 0.0.0.127 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.3.128 0.0.0.15 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.3.144 0.0.0.3 area 0
+MULTILAYER-SW-1(config-router)#network 172.16.3.148 0.0.0.3 area 0
+MULTILAYER-SW-1(config-router)#exit
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#
+
+==================================================================
+
+MULTILAYER-SW-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+MULTILAYER-SW-1(config)#int vlan 10
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#ip address 172.16.1.1 255.255.255.128
+MULTILAYER-SW-1(config-if)#ip helper-address 172.16.3.130
+MULTILAYER-SW-1(config-if)#ex
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#int vlan 20
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#ip address 172.16.1.129 255.255.255.128
+MULTILAYER-SW-1(config-if)#ip helper-address 172.16.3.130
+MULTILAYER-SW-1(config-if)#ex
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#int vlan 30
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#ip address 172.16.2.1 255.255.255.128
+MULTILAYER-SW-1(config-if)#ip helper-address 172.16.3.130
+MULTILAYER-SW-1(config-if)#ex
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#int vlan 40
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#ip address 172.16.2.129 255.255.255.128
+MULTILAYER-SW-1(config-if)#ip helper-address 172.16.3.130
+MULTILAYER-SW-1(config-if)#ex
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#int vlan 50
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#ip address 172.16.3.1 255.255.255.128
+MULTILAYER-SW-1(config-if)#ip helper-address 172.16.3.130
+MULTILAYER-SW-1(config-if)#ex
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#int vlan 60
+MULTILAYER-SW-1(config-if)#no shutdown
+MULTILAYER-SW-1(config-if)#ip address 172.16.3.129 255.255.255.240
+MULTILAYER-SW-1(config-if)#ip helper-address 172.16.3.130
+MULTILAYER-SW-1(config-if)#ex
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
+MULTILAYER-SW-1(config)#
+
+==========================================================
+
+MULTILAYER-SW-1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+MULTILAYER-SW-1(config)#ip route 0.0.0.0 0.0.0.0 gig1/0/1
+MULTILAYER-SW-1(config)#ip route 0.0.0.0 0.0.0.0 gig1/0/2 70
+MULTILAYER-SW-1(config)#
+MULTILAYER-SW-1(config)#do wr
+Building configuration...
+Compressed configuration from 7383 bytes to 3601 bytes[OK]
+[OK]
