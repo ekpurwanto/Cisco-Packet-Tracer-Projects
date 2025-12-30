@@ -1,0 +1,63 @@
+! ========================================
+! CS-SW (Customer Services Switch)
+! Access Layer Switch - HQ Network
+! Health Services - Project 7
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+Switch(config)#hostname CS-SW
+
+CS-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+CS-SW(config)#no ip domain-lookup
+CS-SW(config)#line console 0
+CS-SW(config-line)#password cisco
+CS-SW(config-line)#login
+CS-SW(config-line)#exit
+CS-SW(config)#enable password cisco
+CS-SW(config)#service password-encryption
+CS-SW(config)#exit
+CS-SW#write
+
+! ========================================
+! VLAN & PORT CONFIGURATION
+! ========================================
+
+CS-SW>enable
+CS-SW#configure terminal
+
+! Configure Trunk Ports
+CS-SW(config)#interface range FastEthernet0/1-2
+CS-SW(config-if-range)#switchport mode trunk
+CS-SW(config-if-range)#exit
+
+! Configure Access Ports
+CS-SW(config)#interface range FastEthernet0/3-24
+CS-SW(config-if-range)#switchport mode access
+CS-SW(config-if-range)#switchport access vlan 50
+CS-SW(config-if-range)#exit
+
+! Create VLAN 50
+CS-SW(config)#vlan 50
+CS-SW(config-vlan)#name CS
+CS-SW(config-vlan)#exit
+
+CS-SW(config)#do write
+
+! ========================================
+! END OF CS-SW CONFIGURATION
+! ========================================

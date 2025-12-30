@@ -1,0 +1,147 @@
+! ========================================
+! HR-SW (Human Resources Switch)
+! Access Layer Switch - Branch VLAN 100
+! Melbourne Health Services - Project 7
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! ========================================
+! STEP 1: BASIC CONFIGURATION
+! ========================================
+
+Switch(config)#hostname HR-SW
+
+HR-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+HR-SW(config)#no ip domain-lookup
+HR-SW(config)#line console 0
+HR-SW(config-line)#password cisco
+HR-SW(config-line)#login
+HR-SW(config-line)#exit
+HR-SW(config)#enable password cisco
+HR-SW(config)#service password-encryption
+HR-SW(config)#exit
+HR-SW#write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: VLAN & PORT CONFIGURATION
+! ========================================
+
+HR-SW>enable
+Password: cisco
+HR-SW#configure terminal
+
+! Configure Trunk Ports (to Branch L3 Switches)
+HR-SW(config)#interface range FastEthernet0/1-2
+HR-SW(config-if-range)#switchport mode trunk
+HR-SW(config-if-range)#exit
+
+! Configure Access Ports (to HR Department Devices)
+HR-SW(config)#interface range FastEthernet0/3-24
+HR-SW(config-if-range)#switchport mode access
+HR-SW(config-if-range)#switchport access vlan 100
+HR-SW(config-if-range)#exit
+
+! Create and Name VLAN 100
+HR-SW(config)#vlan 100
+HR-SW(config-vlan)#name HR
+HR-SW(config-vlan)#exit
+
+! Save Configuration
+HR-SW(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! VERIFICATION COMMANDS
+! ========================================
+
+! Check VLAN Configuration
+HR-SW#show vlan brief
+
+! Expected Output:
+! VLAN Name                             Status    Ports
+! ---- -------------------------------- --------- -------------------------------
+! 1    default                          active    Gig0/1, Gig0/2
+! 100  HR                               active    Fa0/3-24
+
+! Check Trunk Configuration
+HR-SW#show interfaces trunk
+
+! Expected Output:
+! Port        Mode         Encapsulation  Status        Native vlan
+! Fa0/1       on           802.1q         trunking      1
+! Fa0/2       on           802.1q         trunking      1
+
+! ========================================
+! END OF HR-SW CONFIGURATION
+! ========================================
+
+🔍 PORT MAPPING
+Port RangeModeVLANConnected ToFa0/1TrunkAllBRANCH-L3SW-1Fa0/2TrunkAllBRANCH-L3SW-2Fa0/3-24Access100HR Department DevicesGig0/1-2Not Used--
+
+🌐 NETWORK INFORMATION
+Human Resources Department (VLAN 100) - Branch:
+
+Network: 192.168.101.192/27
+Gateway: 192.168.101.193
+Usable IPs: 192.168.101.194 - 192.168.101.222
+Broadcast: 192.168.101.223
+Subnet Mask: 255.255.255.224
+DHCP Pool: Configured on central DHCP server (192.168.102.67)
+Users: ~30 (Branch network)
+
+
+🧪 TESTING CHECKLIST
+cisco! 1. Verify VLAN creation
+HR-SW#show vlan brief | include 100
+
+! 2. Verify trunk ports
+HR-SW#show interfaces trunk
+
+! 3. Verify port status
+HR-SW#show ip interface brief
+
+! 4. Check MAC address table
+HR-SW#show mac address-table vlan 100
+
+! 5. Verify spanning-tree
+HR-SW#show spanning-tree vlan 100
+```
+
+---
+
+## 💻 TEST DHCP ON END DEVICE
+
+**On HR Department PC:**
+1. Desktop → IP Configuration → DHCP
+2. Wait for IP assignment
+
+**Expected Result:**
+```
+IP Address: 192.168.101.200 (example)
+Subnet Mask: 255.255.255.224
+Default Gateway: 192.168.101.193
+DNS Server: 192.168.102.68
+```
+
+**Test Connectivity:**
+```
+C:\> ping 192.168.101.193
+Reply from 192.168.101.193: bytes=32 time<1ms TTL=255

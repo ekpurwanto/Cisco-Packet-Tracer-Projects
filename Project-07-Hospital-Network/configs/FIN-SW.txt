@@ -1,0 +1,94 @@
+! ========================================
+! FIN-SW (Finance Switch)
+! Access Layer Switch - Branch VLAN 120
+! Health Services - Project 7
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! ========================================
+! STEP 1: BASIC CONFIGURATION
+! ========================================
+
+Switch(config)#hostname FIN-SW
+
+FIN-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+FIN-SW(config)#no ip domain-lookup
+FIN-SW(config)#line console 0
+FIN-SW(config-line)#password cisco
+FIN-SW(config-line)#login
+FIN-SW(config-line)#exit
+FIN-SW(config)#enable password cisco
+FIN-SW(config)#service password-encryption
+FIN-SW(config)#exit
+FIN-SW#write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: VLAN & PORT CONFIGURATION
+! ========================================
+
+FIN-SW>enable
+Password: cisco
+FIN-SW#configure terminal
+
+! Configure Trunk Ports (to Branch L3 Switches)
+FIN-SW(config)#interface range FastEthernet0/1-2
+FIN-SW(config-if-range)#switchport mode trunk
+FIN-SW(config-if-range)#exit
+
+! Configure Access Ports (to Finance Department Devices)
+FIN-SW(config)#interface range FastEthernet0/3-24
+FIN-SW(config-if-range)#switchport mode access
+FIN-SW(config-if-range)#switchport access vlan 120
+FIN-SW(config-if-range)#exit
+
+! Create and Name VLAN 120
+FIN-SW(config)#vlan 120
+FIN-SW(config-vlan)#name FIN
+FIN-SW(config-vlan)#exit
+
+! Save Configuration
+FIN-SW(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! VERIFICATION COMMANDS
+! ========================================
+
+! Check VLAN Configuration
+FIN-SW#show vlan brief
+
+! Expected Output:
+! VLAN Name                             Status    Ports
+! ---- -------------------------------- --------- -------------------------------
+! 1    default                          active    Gig0/1, Gig0/2
+! 120  FIN                              active    Fa0/3-24
+
+! Check Trunk Configuration
+FIN-SW#show interfaces trunk
+
+! Expected Output:
+! Port        Mode         Encapsulation  Status        Native vlan
+! Fa0/1       on           802.1q         trunking      1
+! Fa0/2       on           802.1q         trunking      1
+
+! ========================================
+! END OF FIN-SW CONFIGURATION
+! ========================================

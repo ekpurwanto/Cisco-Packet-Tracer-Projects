@@ -1,0 +1,163 @@
+! ========================================
+! GWA-SW (Guest/Waiting Area Switch - HQ)
+! Access Layer Switch - HQ VLAN 60
+! Melbourne Health Services - Project 7
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! ========================================
+! STEP 1: BASIC CONFIGURATION
+! ========================================
+
+Switch(config)#hostname GWA-SW
+
+GWA-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+GWA-SW(config)#no ip domain-lookup
+GWA-SW(config)#line console 0
+GWA-SW(config-line)#password cisco
+GWA-SW(config-line)#login
+GWA-SW(config-line)#exit
+GWA-SW(config)#enable password cisco
+GWA-SW(config)#service password-encryption
+GWA-SW(config)#exit
+GWA-SW#write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: VLAN & PORT CONFIGURATION
+! ========================================
+
+GWA-SW>enable
+Password: cisco
+GWA-SW#configure terminal
+
+! Configure Trunk Ports (to HQ L3 Switches)
+GWA-SW(config)#interface range FastEthernet0/1-2
+GWA-SW(config-if-range)#switchport mode trunk
+GWA-SW(config-if-range)#exit
+
+! Configure Access Ports (to Guest/Waiting Area Devices)
+GWA-SW(config)#interface range FastEthernet0/3-24
+GWA-SW(config-if-range)#switchport mode access
+GWA-SW(config-if-range)#switchport access vlan 60
+GWA-SW(config-if-range)#exit
+
+! Create and Name VLAN 60
+GWA-SW(config)#vlan 60
+GWA-SW(config-vlan)#name GWA
+GWA-SW(config-vlan)#exit
+
+! Save Configuration
+GWA-SW(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! VERIFICATION COMMANDS
+! ========================================
+
+! Check VLAN Configuration
+GWA-SW#show vlan brief
+
+! Expected Output:
+! VLAN Name                             Status    Ports
+! ---- -------------------------------- --------- -------------------------------
+! 1    default                          active    Gig0/1, Gig0/2
+! 60   GWA                              active    Fa0/3-24
+
+! Check Trunk Configuration
+GWA-SW#show interfaces trunk
+
+! Expected Output:
+! Port        Mode         Encapsulation  Status        Native vlan
+! Fa0/1       on           802.1q         trunking      1
+! Fa0/2       on           802.1q         trunking      1
+
+! ========================================
+! END OF GWA-SW CONFIGURATION
+! ========================================
+
+📊 RINGKASAN KONFIGURASI
+ItemConfigurationStatusHostnameGWA-SW✅Banner MOTDWarning notice configured✅Console Passwordcisco (encrypted)✅Enable Passwordcisco (encrypted)✅Domain LookupDisabled✅Trunk PortsFa0/1-2✅Access PortsFa0/3-24 (VLAN 60)✅VLAN 60Created and named "GWA"✅Config SavedYes✅
+
+🔍 PORT MAPPING
+Port RangeModeVLANConnected ToFa0/1TrunkAllHQ-L3SW-1Fa0/2TrunkAllHQ-L3SW-2Fa0/3-24Access60Guest/Waiting Area DevicesGig0/1-2Not Used--
+
+🌐 NETWORK INFORMATION
+Guest/Waiting Area (VLAN 60) - HQ:
+
+Network: 192.168.101.64/26
+Gateway: 192.168.101.65
+Usable IPs: 192.168.101.66 - 192.168.101.126
+Broadcast: 192.168.101.127
+Subnet Mask: 255.255.255.192
+DHCP Pool: Configured on central DHCP server (192.168.102.67)
+Users: ~60 (HQ network)
+
+
+🧪 TESTING CHECKLIST
+Setelah menghubungkan devices ke GWA-SW:
+cisco! 1. Verify VLAN creation
+GWA-SW#show vlan brief | include 60
+
+! Expected Output:
+! 60   GWA                              active    Fa0/3-24
+
+! 2. Verify trunk ports
+GWA-SW#show interfaces trunk
+
+! Expected Output:
+! Port        Mode         Encapsulation  Status        Native vlan
+! Fa0/1       on           802.1q         trunking      1
+! Fa0/2       on           802.1q         trunking      1
+
+! 3. Verify port status
+GWA-SW#show ip interface brief
+
+! 4. Check connected devices (after connecting)
+GWA-SW#show mac address-table vlan 60
+
+! 5. Verify spanning-tree
+GWA-SW#show spanning-tree vlan 60
+```
+
+---
+
+## 💻 TEST DHCP ON END DEVICE
+
+**On Guest PC/Laptop:**
+1. Click on device
+2. Go to **Desktop** tab
+3. Click **IP Configuration**
+4. Select **DHCP**
+5. Wait for IP assignment
+
+**Expected Result:**
+```
+IP Address: 192.168.101.70 (example)
+Subnet Mask: 255.255.255.192
+Default Gateway: 192.168.101.65
+DNS Server: 192.168.102.68
+```
+
+**Test Connectivity:**
+```
+C:\> ping 192.168.101.65
+Pinging 192.168.101.65 with 32 bytes of data:
+Reply from 192.168.101.65: bytes=32 time<1ms TTL=255

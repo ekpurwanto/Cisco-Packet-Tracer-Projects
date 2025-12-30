@@ -1,0 +1,104 @@
+! ========================================
+! BRANCH-GWA-SW (Guest/Waiting Area)
+! Access Layer Switch Configuration
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! Set Hostname
+Switch(config)#hostname BRANCH-GWA-SW
+
+! Configure Banner Message
+BRANCH-GWA-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+! Disable DNS Lookup
+BRANCH-GWA-SW(config)#no ip domain-lookup
+
+! Configure Console Password
+BRANCH-GWA-SW(config)#line console 0
+BRANCH-GWA-SW(config-line)#password cisco
+BRANCH-GWA-SW(config-line)#login
+BRANCH-GWA-SW(config-line)#exit
+
+! Configure Enable Password
+BRANCH-GWA-SW(config)#enable password cisco
+
+! Encrypt Passwords
+BRANCH-GWA-SW(config)#service password-encryption
+
+! Save Configuration
+BRANCH-GWA-SW(config)#exit
+BRANCH-GWA-SW#write
+Building configuration...
+[OK]
+
+! ========================================
+! VLAN & PORT CONFIGURATION
+! ========================================
+
+BRANCH-GWA-SW>enable
+Password: cisco
+BRANCH-GWA-SW#configure terminal
+
+! Configure Trunk Ports (to L3 Switches)
+BRANCH-GWA-SW(config)#interface range FastEthernet0/1-2
+BRANCH-GWA-SW(config-if-range)#switchport mode trunk
+BRANCH-GWA-SW(config-if-range)#exit
+
+! Configure Access Ports (to End Devices)
+BRANCH-GWA-SW(config)#interface range FastEthernet0/3-24
+BRANCH-GWA-SW(config-if-range)#switchport mode access
+BRANCH-GWA-SW(config-if-range)#switchport access vlan 130
+BRANCH-GWA-SW(config-if-range)#exit
+
+! Create and Name VLAN 130
+BRANCH-GWA-SW(config)#vlan 130
+BRANCH-GWA-SW(config-vlan)#name Branch-GWA
+BRANCH-GWA-SW(config-vlan)#exit
+
+! Save Configuration
+BRANCH-GWA-SW(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! END OF BRANCH-GWA-SW CONFIGURATION
+! ========================================
+
+🔍 VERIFIKASI:
+
+! Check VLAN Configuration
+BRANCH-GWA-SW#show vlan brief
+
+! Expected Output:
+! VLAN Name                             Status    Ports
+! ---- -------------------------------- --------- -------------------------------
+! 1    default                          active    Gig0/1, Gig0/2
+! 130  Branch-GWA                       active    Fa0/3, Fa0/4, Fa0/5, ... Fa0/24
+
+! Check Trunk Configuration
+BRANCH-GWA-SW#show interfaces trunk
+
+! Expected Output:
+! Port        Mode         Encapsulation  Status        Native vlan
+! Fa0/1       on           802.1q         trunking      1
+! Fa0/2       on           802.1q         trunking      1
+
+! Check Port Status
+BRANCH-GWA-SW#show ip interface brief
+
+🎯 PORT MAPPING:
+Port RangeModeVLANConnected ToFa0/1TrunkAllBranch-ML-SW1Fa0/2TrunkAllBranch-ML-SW2Fa0/3-24Access130Guest/Waiting Area DevicesGig0/1-2Not Used--

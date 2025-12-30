@@ -1,0 +1,148 @@
+! ========================================
+! HQ-L3SW-1 CONFIGURATION
+! Layer 3 Switch - HQ Network
+! Melbourne Health Services - Project 7
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! ========================================
+! STEP 1: BASIC CONFIGURATION + SSH
+! ========================================
+
+Switch(config)#hostname HQ-L3SW-1
+
+HQ-L3SW-1(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+HQ-L3SW-1(config)#no ip domain-lookup
+HQ-L3SW-1(config)#line console 0
+HQ-L3SW-1(config-line)#password cisco
+HQ-L3SW-1(config-line)#login
+HQ-L3SW-1(config-line)#exit
+HQ-L3SW-1(config)#enable password cisco
+HQ-L3SW-1(config)#service password-encryption
+HQ-L3SW-1(config)#exit
+HQ-L3SW-1#write
+
+! Configure SSH
+HQ-L3SW-1#configure terminal
+HQ-L3SW-1(config)#ip domain-name cisco.net
+HQ-L3SW-1(config)#username admin password cisco
+HQ-L3SW-1(config)#crypto key generate rsa
+1024
+HQ-L3SW-1(config)#line vty 0 15
+HQ-L3SW-1(config-line)#login local
+HQ-L3SW-1(config-line)#transport input ssh
+HQ-L3SW-1(config-line)#exit
+HQ-L3SW-1(config)#do write
+
+! ========================================
+! STEP 2: VLAN & TRUNK CONFIGURATION
+! ========================================
+
+HQ-L3SW-1(config)#vlan 10
+HQ-L3SW-1(config-vlan)#vlan 20
+HQ-L3SW-1(config-vlan)#vlan 30
+HQ-L3SW-1(config-vlan)#vlan 40
+HQ-L3SW-1(config-vlan)#vlan 50
+HQ-L3SW-1(config-vlan)#vlan 60
+HQ-L3SW-1(config-vlan)#exit
+
+HQ-L3SW-1(config)#interface range GigabitEthernet1/0/2-7
+HQ-L3SW-1(config-if-range)#switchport mode trunk
+HQ-L3SW-1(config-if-range)#exit
+HQ-L3SW-1(config)#do write
+
+! ========================================
+! STEP 3: ROUTED PORT CONFIGURATION
+! ========================================
+
+HQ-L3SW-1(config)#interface GigabitEthernet1/0/1
+HQ-L3SW-1(config-if)#no switchport
+HQ-L3SW-1(config-if)#ip address 192.168.102.81 255.255.255.252
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+HQ-L3SW-1(config)#do write
+
+! ========================================
+! STEP 4: OSPF ROUTING CONFIGURATION
+! ========================================
+
+HQ-L3SW-1(config)#ip routing
+HQ-L3SW-1(config)#router ospf 10
+HQ-L3SW-1(config-router)#network 192.168.100.0 0.0.0.63 area 0
+HQ-L3SW-1(config-router)#network 192.168.100.64 0.0.0.63 area 0
+HQ-L3SW-1(config-router)#network 192.168.100.128 0.0.0.63 area 0
+HQ-L3SW-1(config-router)#network 192.168.100.192 0.0.0.63 area 0
+HQ-L3SW-1(config-router)#network 192.168.101.0 0.0.0.63 area 0
+HQ-L3SW-1(config-router)#network 192.168.101.64 0.0.0.63 area 0
+HQ-L3SW-1(config-router)#network 192.168.102.80 0.0.0.3 area 0
+HQ-L3SW-1(config-router)#exit
+HQ-L3SW-1(config)#do write
+
+! ========================================
+! STEP 5: DEFAULT STATIC ROUTE
+! ========================================
+
+HQ-L3SW-1(config)#ip route 0.0.0.0 0.0.0.0 192.168.102.82
+HQ-L3SW-1(config)#do write
+
+! ========================================
+! STEP 6: INTER-VLAN ROUTING (SVI)
+! ⚠️ PERBAIKAN - HARUS DI HQ-L3SW-1!
+! ========================================
+
+HQ-L3SW-1(config)#interface vlan 10
+HQ-L3SW-1(config-if)#ip address 192.168.100.1 255.255.255.192
+HQ-L3SW-1(config-if)#ip helper-address 192.168.102.67
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+
+HQ-L3SW-1(config)#interface vlan 20
+HQ-L3SW-1(config-if)#ip address 192.168.100.65 255.255.255.192
+HQ-L3SW-1(config-if)#ip helper-address 192.168.102.67
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+
+HQ-L3SW-1(config)#interface vlan 30
+HQ-L3SW-1(config-if)#ip address 192.168.100.129 255.255.255.192
+HQ-L3SW-1(config-if)#ip helper-address 192.168.102.67
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+
+HQ-L3SW-1(config)#interface vlan 40
+HQ-L3SW-1(config-if)#ip address 192.168.100.193 255.255.255.192
+HQ-L3SW-1(config-if)#ip helper-address 192.168.102.67
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+
+HQ-L3SW-1(config)#interface vlan 50
+HQ-L3SW-1(config-if)#ip address 192.168.101.1 255.255.255.192
+HQ-L3SW-1(config-if)#ip helper-address 192.168.102.67
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+
+HQ-L3SW-1(config)#interface vlan 60
+HQ-L3SW-1(config-if)#ip address 192.168.101.65 255.255.255.192
+HQ-L3SW-1(config-if)#ip helper-address 192.168.102.67
+HQ-L3SW-1(config-if)#no shutdown
+HQ-L3SW-1(config-if)#exit
+
+HQ-L3SW-1(config)#do write
+
+! ========================================
+! END OF HQ-L3SW-1 CONFIGURATION
+! ========================================

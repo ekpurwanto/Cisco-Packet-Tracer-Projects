@@ -1,0 +1,134 @@
+! ========================================
+! MER-SW CONFIGURATION
+! Access Layer Switch - Marketing Department
+! Melbourne Health Services - Project 7
+! ========================================
+
+! ========================================
+! STEP 1: BASIC SWITCH CONFIGURATION
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! Set hostname
+Switch(config)#hostname MER-SW
+
+! Configure MOTD Banner
+MER-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+! Disable DNS lookup
+MER-SW(config)#no ip domain lookup
+
+! Configure console access
+MER-SW(config)#line console 0
+MER-SW(config-line)#password cisco
+MER-SW(config-line)#login
+MER-SW(config-line)#exit
+
+! Configure enable password
+MER-SW(config)#enable password cisco
+
+! Encrypt all plaintext passwords
+MER-SW(config)#service password-encryption
+
+MER-SW(config)#exit
+MER-SW#
+%SYS-5-CONFIG_I: Configured from console by console
+
+! Save configuration
+MER-SW#write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: TRUNK PORT CONFIGURATION
+! ========================================
+
+MER-SW>enable
+MER-SW#configure terminal
+
+! Configure trunk ports to Distribution/Core Switch
+MER-SW(config)#interface range FastEthernet0/1-2
+MER-SW(config-if-range)#switchport mode trunk
+MER-SW(config-if-range)#no shutdown
+MER-SW(config-if-range)#exit
+
+! ========================================
+! STEP 3: ACCESS PORT & VLAN CONFIGURATION
+! ========================================
+
+! Configure access ports for Marketing Department
+MER-SW(config)#interface range FastEthernet0/3-24
+MER-SW(config-if-range)#switchport mode access
+MER-SW(config-if-range)#switchport access vlan 20
+MER-SW(config-if-range)#no shutdown
+MER-SW(config-if-range)#exit
+
+! Create VLAN 20
+MER-SW(config)#vlan 20
+MER-SW(config-vlan)#name MER
+MER-SW(config-vlan)#exit
+
+! Save configuration
+MER-SW(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! END OF MER-SW CONFIGURATION
+! ========================================
+
+📊 MER-SW VLAN & PORT SUMMARY
+VLAN ID	VLAN Name	Port Range	Mode
+20	MER (Marketing)	Fa0/3 – Fa0/24	Access
+Trunk	—	Fa0/1 – Fa0/2	Trunk
+🌐 MER-SW PORT TOPOLOGY
+               ┌─────────────────┐
+               │     MER-SW      │
+               │  Access Switch  │
+               └───────┬─────────┘
+                       │
+          ┌────────────┼────────────┐
+          │                         │
+     Fa0/1 (TRUNK)            Fa0/2 (TRUNK)
+          │                         │
+   ┌──────▼──────┐           ┌──────▼──────┐
+   │Dist/Core SW │           │Dist/Core SW │
+   └─────────────┘           └─────────────┘
+
+   Fa0/3 – Fa0/24
+   VLAN 20 (Marketing Department)
+
+🔍 CONFIGURATION DETAILS
+Item	Value
+Switch Role	Access Layer
+Department	Marketing
+VLAN ID	20
+Trunk Ports	Fa0/1–Fa0/2
+Access Ports	Fa0/3–Fa0/24
+Security	MOTD, Console Password, Enable Password
+🧪 VERIFICATION COMMANDS
+1️⃣ Verify VLAN
+MER-SW#show vlan brief
+
+2️⃣ Verify Trunk Ports
+MER-SW#show interfaces trunk
+
+3️⃣ Verify Interface Status
+MER-SW#show ip interface brief
+
+4️⃣ Verify Configuration
+MER-SW#show running-config

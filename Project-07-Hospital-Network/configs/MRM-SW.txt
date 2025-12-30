@@ -1,0 +1,133 @@
+! ========================================
+! MRM-SW CONFIGURATION
+! Access Layer Switch - MRM Department
+! Melbourne Health Services - Project 7
+! ========================================
+
+! ========================================
+! STEP 1: BASIC SWITCH CONFIGURATION
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! Set hostname
+Switch(config)#hostname MRM-SW
+
+! Configure MOTD Banner
+MRM-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+! Disable DNS lookup
+MRM-SW(config)#no ip domain lookup
+
+! Configure console access
+MRM-SW(config)#line console 0
+MRM-SW(config-line)#password cisco
+MRM-SW(config-line)#login
+MRM-SW(config-line)#exit
+
+! Configure enable password
+MRM-SW(config)#enable password cisco
+
+! Encrypt all plaintext passwords
+MRM-SW(config)#service password-encryption
+
+MRM-SW(config)#exit
+MRM-SW#
+%SYS-5-CONFIG_I: Configured from console by console
+
+! Save configuration
+MRM-SW#write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: TRUNK PORT CONFIGURATION
+! ========================================
+
+MRM-SW>enable
+MRM-SW#configure terminal
+
+! Configure trunk ports to Distribution/Core Switch
+MRM-SW(config)#interface range FastEthernet0/1-2
+MRM-SW(config-if-range)#switchport mode trunk
+MRM-SW(config-if-range)#no shutdown
+MRM-SW(config-if-range)#exit
+
+! ========================================
+! STEP 3: ACCESS PORT & VLAN CONFIGURATION
+! ========================================
+
+! Configure access ports for MRM Department
+MRM-SW(config)#interface range FastEthernet0/3-24
+MRM-SW(config-if-range)#switchport mode access
+MRM-SW(config-if-range)#switchport access vlan 30
+MRM-SW(config-if-range)#no shutdown
+MRM-SW(config-if-range)#exit
+
+! Create VLAN 30
+MRM-SW(config)#vlan 30
+MRM-SW(config-vlan)#name MRM
+MRM-SW(config-vlan)#exit
+
+! Save configuration
+MRM-SW(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! END OF MRM-SW CONFIGURATION
+! ========================================
+📊 MRM-SW VLAN & PORT SUMMARY
+VLAN ID	VLAN Name	Port Range	Mode
+30	MRM	Fa0/3 – Fa0/24	Access
+Trunk	—	Fa0/1 – Fa0/2	Trunk
+🌐 MRM-SW PORT TOPOLOGY
+               ┌─────────────────┐
+               │     MRM-SW      │
+               │  Access Switch  │
+               └───────┬─────────┘
+                       │
+          ┌────────────┼────────────┐
+          │                         │
+     Fa0/1 (TRUNK)            Fa0/2 (TRUNK)
+          │                         │
+   ┌──────▼──────┐           ┌──────▼──────┐
+   │Dist/Core SW │           │Dist/Core SW │
+   └─────────────┘           └─────────────┘
+
+   Fa0/3 – Fa0/24
+   VLAN 30 (MRM Department)
+
+🔍 CONFIGURATION DETAILS
+Item	Value
+Switch Role	Access Layer
+Department	MRM
+VLAN ID	30
+Trunk Ports	Fa0/1–Fa0/2
+Access Ports	Fa0/3–Fa0/24
+Security	MOTD, Console Password, Enable Password
+🧪 VERIFICATION COMMANDS
+1️⃣ Verify VLAN
+MRM-SW#show vlan brief
+
+2️⃣ Verify Trunk Ports
+MRM-SW#show interfaces trunk
+
+3️⃣ Verify Interface Status
+MRM-SW#show ip interface brief
+
+4️⃣ Verify Configuration
+MRM-SW#show running-config

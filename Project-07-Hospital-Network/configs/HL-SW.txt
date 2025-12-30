@@ -1,0 +1,73 @@
+====================================================
+HL-SW BASIC CONFIGURATION
+====================================================
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+Switch(config)#hostname HL-SW
+HL-SW(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+HL-SW(config)#no ip domain lookup
+
+HL-SW(config)#line console 0
+HL-SW(config-line)#password cisco
+HL-SW(config-line)#login
+HL-SW(config-line)#exit
+
+HL-SW(config)#enable password cisco
+HL-SW(config)#service password-encryption
+HL-SW(config)#exit
+
+HL-SW#
+%SYS-5-CONFIG_I: Configured from console by console
+
+HL-SW#wr
+Building configuration...
+[OK]
+
+====================================================
+HL-SW INTERFACE & VLAN CONFIGURATION
+====================================================
+
+HL-SW>en
+Password:
+HL-SW#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+HL-SW(config)#int range fa0/1-2
+HL-SW(config-if-range)#switchport mode trunk
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to down
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to up
+
+HL-SW(config-if-range)#exit
+
+HL-SW(config)#int range fa0/3-24
+HL-SW(config-if-range)#switchport mode access
+HL-SW(config-if-range)#switchport access vlan 90
+% Access VLAN does not exist. Creating vlan 90
+HL-SW(config-if-range)#exit
+
+HL-SW(config)#vlan 90
+HL-SW(config-vlan)#name HL
+HL-SW(config-vlan)#exit
+
+HL-SW(config)#do wr
+Building configuration...
+[OK]

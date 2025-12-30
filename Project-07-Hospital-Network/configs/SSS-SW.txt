@@ -1,0 +1,63 @@
+enable
+configure terminal
+hostname SSS-SW
+
+banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+no ip domain lookup
+
+line console 0
+ password cisco
+ login
+ exit
+
+enable password cisco
+service password-encryption
+exit
+write memory
+
+🔌 Interface & VLAN Configuration
+🔀 Trunk Port
+
+Digunakan untuk koneksi ke switch lain / distribution layer.
+
+enable
+configure terminal
+
+interface FastEthernet0/1
+ switchport mode trunk
+ exit
+
+🖥️ Access Ports (User Ports)
+
+Port untuk end-device (PC, printer, dll).
+
+interface range FastEthernet0/2-5
+ switchport mode access
+ switchport access vlan 70
+ exit
+
+🧩 VLAN Configuration
+vlan 70
+ name SSS
+ exit
+
+💾 Save Configuration
+write memory
+
+📊 VLAN Summary
+VLAN ID	VLAN Name	Interface Range
+70	SSS	Fa0/2 – Fa0/5
+Trunk	—	Fa0/1

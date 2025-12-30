@@ -1,0 +1,133 @@
+! ========================================
+! ISP-2 CONFIGURATION
+! Internet Service Provider Router 2
+! Melbourne Health Services - Project 7
+! ========================================
+
+! ========================================
+! STEP 1: INTERFACE IP ADDRESSING
+! ========================================
+
+ISP-2>enable
+ISP-2#configure terminal
+
+! Serial0/2/0 (Connection to HQ-Router)
+ISP-2(config)#interface Serial0/2/0
+ISP-2(config-if)#ip address 195.136.17.6 255.255.255.252
+ISP-2(config-if)#no shutdown
+ISP-2(config-if)#exit
+
+! Serial0/2/1 (Connection to Branch-Router)
+ISP-2(config)#interface Serial0/2/1
+ISP-2(config-if)#ip address 195.136.17.14 255.255.255.252
+ISP-2(config-if)#no shutdown
+ISP-2(config-if)#exit
+
+ISP-2(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: OSPF ROUTING CONFIGURATION
+! ========================================
+
+ISP-2#configure terminal
+ISP-2(config)#router ospf 10
+
+! Advertise network to HQ-Router
+ISP-2(config-router)#network 195.136.17.4 0.0.0.3 area 0
+
+! Advertise network to Branch-Router
+ISP-2(config-router)#network 195.136.17.12 0.0.0.3 area 0
+ISP-2(config-router)#exit
+
+ISP-2(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! VERIFICATION COMMANDS
+! ========================================
+
+! Check interface status
+ISP-2#show ip interface brief
+
+! Expected Output:
+! Interface              IP-Address      OK? Method Status                Protocol
+! Serial0/2/0            195.136.17.6     YES manual up                    up
+! Serial0/2/1            195.136.17.14    YES manual up                    up
+
+! Check OSPF neighbors
+ISP-2#show ip ospf neighbor
+
+! Expected Output:
+! Neighbor ID     Pri   State           Dead Time   Address         Interface
+! (HQ-Router)     0     FULL/  -        00:00:3x    195.136.17.5    Serial0/2/0
+! (Branch-Router) 0     FULL/  -        00:00:3x    195.136.17.13   Serial0/2/1
+
+! Check routing table
+ISP-2#show ip route
+
+! Check OSPF learned routes
+ISP-2#show ip route ospf
+
+! ========================================
+! END OF ISP-2 CONFIGURATION
+! ========================================
+
+📊 ISP-2 CONNECTION SUMMARY
+Interface	IP Address	Subnet Mask	Connected To	Peer IP
+Serial0/2/0	195.136.17.6	255.255.255.252	HQ-Router	195.136.17.5
+Serial0/2/1	195.136.17.14	255.255.255.252	Branch-Router	195.136.17.13
+🌐 NETWORK TOPOLOGY – ISP-2 CONNECTIONS
+                    ┌─────────┐
+                    │  ISP-2  │
+                    │195.136  │
+                    └────┬────┘
+                         │
+            ┌────────────┼────────────┐
+            │                         │
+      Se0/2/0:.6                Se0/2/1:.14
+      195.136.17.4/30          195.136.17.12/30
+            │                         │
+      Se0/x/x:.5                Se0/x/x:.13
+            │                         │
+      ┌─────▼─────┐            ┌─────▼─────┐
+      │ HQ-Router │            │Branch-Rtr │
+      │  (Main)   │            │ (Backup)  │
+      └───────────┘            └───────────┘
+
+🔍 OSPF CONFIGURATION DETAILS
+Parameter	Value
+Process ID	10
+Area	0 (Backbone)
+Advertised Networks	195.136.17.4/30, 195.136.17.12/30
+Router Role	ISP / Transit Router
+🧪 VERIFICATION TESTS
+1️⃣ Interface Status
+ISP-2#show ip interface brief | include Serial
+
+
+Expected:
+
+Serial0/2/0    195.136.17.6     YES manual up    up
+Serial0/2/1    195.136.17.14    YES manual up    up
+
+2️⃣ OSPF Neighbor Check
+ISP-2#show ip ospf neighbor
+
+
+Should show:
+
+HQ-Router (195.136.17.5)
+
+Branch-Router (195.136.17.13)
+
+3️⃣ OSPF Routes
+ISP-2#show ip route ospf
+
+4️⃣ Connectivity Test
+ISP-2#ping 195.136.17.5
+ISP-2#ping 195.136.17.13
+ISP-2#ping 192.168.100.1
+ISP-2#ping 192.168.101.129

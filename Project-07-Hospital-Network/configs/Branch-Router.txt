@@ -1,0 +1,187 @@
+! ========================================
+! BRANCH-ROUTER CONFIGURATION
+! Core Router - Branch Network
+! Health Services - Project 7
+! ========================================
+
+Router>enable
+Router#configure terminal
+
+! ========================================
+! STEP 1: BASIC CONFIGURATION
+! ========================================
+
+Router(config)#hostname Branch-Router
+
+Branch-Router(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+Branch-Router(config)#no ip domain-lookup
+Branch-Router(config)#line console 0
+Branch-Router(config-line)#password cisco
+Branch-Router(config-line)#login
+Branch-Router(config-line)#exit
+Branch-Router(config)#enable password cisco
+Branch-Router(config)#service password-encryption
+Branch-Router(config)#exit
+Branch-Router#write
+
+! ========================================
+! STEP 2: IP ADDRESSING
+! ========================================
+
+Branch-Router#configure terminal
+
+! GigabitEthernet0/0 (to BRANCH-L3SW-1)
+Branch-Router(config)#interface GigabitEthernet0/0
+Branch-Router(config-if)#ip address 192.168.102.94 255.255.255.252
+Branch-Router(config-if)#no shutdown
+Branch-Router(config-if)#exit
+
+! GigabitEthernet0/1 (to BRANCH-L3SW-2)
+Branch-Router(config)#interface GigabitEthernet0/1
+Branch-Router(config-if)#ip address 192.168.102.98 255.255.255.252
+Branch-Router(config-if)#no shutdown
+Branch-Router(config-if)#exit
+
+! Serial0/1/0 (to HQ-Router - VPN)
+Branch-Router(config)#interface Serial0/1/0
+Branch-Router(config-if)#ip address 192.168.102.90 255.255.255.252
+Branch-Router(config-if)#clock rate 64000
+Branch-Router(config-if)#no shutdown
+Branch-Router(config-if)#exit
+
+! Serial0/2/0 (to ISP1)
+Branch-Router(config)#interface Serial0/2/0
+Branch-Router(config-if)#ip address 195.136.17.9 255.255.255.252
+Branch-Router(config-if)#clock rate 64000
+Branch-Router(config-if)#no shutdown
+Branch-Router(config-if)#exit
+
+! Serial0/1/1 (to ISP2)
+Branch-Router(config)#interface Serial0/1/1
+Branch-Router(config-if)#ip address 195.136.17.13 255.255.255.252
+Branch-Router(config-if)#clock rate 64000
+Branch-Router(config-if)#no shutdown
+Branch-Router(config-if)#exit
+
+Branch-Router(config)#do write
+
+! ========================================
+! STEP 3: OSPF ROUTING
+! ========================================
+
+Branch-Router(config)#router ospf 10
+Branch-Router(config-router)#network 192.168.102.92 0.0.0.3 area 0
+Branch-Router(config-router)#network 192.168.102.96 0.0.0.3 area 0
+Branch-Router(config-router)#network 192.168.102.88 0.0.0.3 area 0
+Branch-Router(config-router)#network 195.136.17.8 0.0.0.3 area 0
+Branch-Router(config-router)#network 195.136.17.12 0.0.0.3 area 0
+Branch-Router(config-router)#exit
+
+! Default Static Routes
+Branch-Router(config)#ip route 0.0.0.0 0.0.0.0 195.136.17.10
+Branch-Router(config)#ip route 0.0.0.0 0.0.0.0 195.136.17.14 70
+Branch-Router(config)#do write
+
+! ========================================
+! STEP 4: NAT/PAT CONFIGURATION
+! ========================================
+
+! Configure NAT Outside
+Branch-Router(config)#interface Serial0/1/1
+Branch-Router(config-if)#ip nat outside
+Branch-Router(config-if)#exit
+
+Branch-Router(config)#interface Serial0/2/0
+Branch-Router(config-if)#ip nat outside
+Branch-Router(config-if)#exit
+
+! Configure NAT Inside
+Branch-Router(config)#interface range GigabitEthernet0/0-1
+Branch-Router(config-if-range)#ip nat inside
+Branch-Router(config-if-range)#exit
+
+! PAT Overload
+Branch-Router(config)#ip nat inside source list 1 interface Serial0/1/1 overload
+Branch-Router(config)#ip nat inside source list 1 interface Serial0/2/0 overload
+
+! ACL for NAT
+Branch-Router(config)#access-list 1 permit 192.168.101.128 0.0.0.31
+Branch-Router(config)#access-list 1 permit 192.168.101.160 0.0.0.31
+Branch-Router(config)#access-list 1 permit 192.168.101.192 0.0.0.31
+Branch-Router(config)#access-list 1 permit 192.168.101.224 0.0.0.31
+Branch-Router(config)#access-list 1 permit 192.168.102.0 0.0.0.31
+Branch-Router(config)#access-list 1 permit 192.168.102.32 0.0.0.31
+Branch-Router(config)#do write
+
+! ========================================
+! STEP 5: ENABLE SECURITY LICENSE
+! ========================================
+
+Branch-Router>enable
+Branch-Router#configure terminal
+Branch-Router(config)#license boot module c2900 technology-package securityk9
+ACCEPT? [yes/no]: yes
+
+Branch-Router(config)#exit
+Branch-Router#write
+Branch-Router#reload
+
+! ========================================
+! STEP 6: IPSEC VPN CONFIGURATION
+! ========================================
+
+Branch-Router>enable
+Branch-Router#configure terminal
+
+! Phase 1: ISAKMP
+Branch-Router(config)#crypto isakmp policy 10
+Branch-Router(config-isakmp)#encryption aes 256
+Branch-Router(config-isakmp)#authentication pre-share
+Branch-Router(config-isakmp)#group 5
+Branch-Router(config-isakmp)#exit
+
+Branch-Router(config)#crypto isakmp key VPN address 192.168.102.89
+
+! Phase 2: IPsec Transform Set
+Branch-Router(config)#crypto ipsec transform-set VPN_SET esp-aes esp-sha-hmac
+Branch-Router(cfg-crypto-trans)#exit
+
+! Crypto Map
+Branch-Router(config)#crypto map VPN_MAP 10 ipsec-isakmp
+Branch-Router(config-crypto-map)#description VPN to HQ Network
+Branch-Router(config-crypto-map)#set peer 192.168.102.89
+Branch-Router(config-crypto-map)#set transform-set VPN_SET
+Branch-Router(config-crypto-map)#match address 110
+Branch-Router(config-crypto-map)#exit
+
+! ⚠️ PERBAIKAN ACL 110 - ADA TYPO!
+! Hapus ACL lama yang salah
+Branch-Router(config)#no access-list 110
+
+! Buat ACL baru yang BENAR
+Branch-Router(config)#access-list 110 permit ip 192.168.101.128 0.0.0.127 192.168.100.0 0.0.0.255
+Branch-Router(config)#access-list 110 permit ip 192.168.101.128 0.0.0.127 192.168.101.0 0.0.0.127
+
+! Apply Crypto Map ke Interface yang BENAR
+Branch-Router(config)#interface Serial0/1/0
+Branch-Router(config-if)#crypto map VPN_MAP
+Branch-Router(config-if)#exit
+
+Branch-Router(config)#do write
+
+! ========================================
+! END OF BRANCH-ROUTER CONFIGURATION
+! ========================================

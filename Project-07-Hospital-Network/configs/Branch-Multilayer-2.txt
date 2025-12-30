@@ -1,0 +1,144 @@
+
+
+! ========================================
+! BRANCH-L3SW-2 CONFIGURATION
+! Layer 3 Switch - Branch Network
+! Health Services - Project 7
+! ========================================
+
+Switch>enable
+Switch#configure terminal
+
+! ========================================
+! STEP 1: BASIC CONFIGURATION + SSH
+! ========================================
+
+Switch(config)#hostname BRANCH-L3SW-2
+
+BRANCH-L3SW-2(config)#banner motd #
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+BRANCH-L3SW-2(config)#no ip domain-lookup
+BRANCH-L3SW-2(config)#line console 0
+BRANCH-L3SW-2(config-line)#password cisco
+BRANCH-L3SW-2(config-line)#login
+BRANCH-L3SW-2(config-line)#exit
+BRANCH-L3SW-2(config)#enable password cisco
+BRANCH-L3SW-2(config)#service password-encryption
+
+! Configure SSH
+BRANCH-L3SW-2(config)#ip domain-name cisco.net
+BRANCH-L3SW-2(config)#username admin password cisco
+BRANCH-L3SW-2(config)#crypto key generate rsa
+1024
+BRANCH-L3SW-2(config)#line vty 0 15
+BRANCH-L3SW-2(config-line)#login local
+BRANCH-L3SW-2(config-line)#transport input ssh
+BRANCH-L3SW-2(config-line)#exit
+BRANCH-L3SW-2(config)#do write
+
+! ========================================
+! STEP 2: VLAN & TRUNK CONFIGURATION
+! ========================================
+
+BRANCH-L3SW-2(config)#vlan 80
+BRANCH-L3SW-2(config-vlan)#vlan 90
+BRANCH-L3SW-2(config-vlan)#vlan 100
+BRANCH-L3SW-2(config-vlan)#vlan 110
+BRANCH-L3SW-2(config-vlan)#vlan 120
+BRANCH-L3SW-2(config-vlan)#vlan 130
+BRANCH-L3SW-2(config-vlan)#exit
+
+! Configure Trunk Ports (to Access Switches)
+BRANCH-L3SW-2(config)#interface range GigabitEthernet1/0/2-7
+BRANCH-L3SW-2(config-if-range)#switchport mode trunk
+BRANCH-L3SW-2(config-if-range)#exit
+BRANCH-L3SW-2(config)#do write
+
+! ========================================
+! STEP 3: ROUTED PORT CONFIGURATION
+! ========================================
+
+! Configure Routed Port (to Branch Router)
+BRANCH-L3SW-2(config)#interface GigabitEthernet1/0/1
+BRANCH-L3SW-2(config-if)#no switchport
+BRANCH-L3SW-2(config-if)#ip address 192.168.102.97 255.255.255.252
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+BRANCH-L3SW-2(config)#do write
+
+! ========================================
+! STEP 4: OSPF ROUTING CONFIGURATION
+! ========================================
+
+BRANCH-L3SW-2(config)#ip routing
+BRANCH-L3SW-2(config)#router ospf 10
+BRANCH-L3SW-2(config-router)#network 192.168.101.128 0.0.0.31 area 0
+BRANCH-L3SW-2(config-router)#network 192.168.101.160 0.0.0.31 area 0
+BRANCH-L3SW-2(config-router)#network 192.168.101.192 0.0.0.31 area 0
+BRANCH-L3SW-2(config-router)#network 192.168.101.224 0.0.0.31 area 0
+BRANCH-L3SW-2(config-router)#network 192.168.102.0 0.0.0.31 area 0
+BRANCH-L3SW-2(config-router)#network 192.168.102.32 0.0.0.31 area 0
+BRANCH-L3SW-2(config-router)#network 192.168.102.96 0.0.0.3 area 0
+BRANCH-L3SW-2(config-router)#exit
+
+! Default Static Route
+BRANCH-L3SW-2(config)#ip route 0.0.0.0 0.0.0.0 192.168.102.98
+BRANCH-L3SW-2(config)#do write
+
+! ========================================
+! STEP 5: INTER-VLAN ROUTING (SVI)
+! ========================================
+
+BRANCH-L3SW-2(config)#interface vlan 80
+BRANCH-L3SW-2(config-if)#ip address 192.168.101.129 255.255.255.224
+BRANCH-L3SW-2(config-if)#ip helper-address 192.168.102.67
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+
+BRANCH-L3SW-2(config)#interface vlan 90
+BRANCH-L3SW-2(config-if)#ip address 192.168.101.161 255.255.255.224
+BRANCH-L3SW-2(config-if)#ip helper-address 192.168.102.67
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+
+BRANCH-L3SW-2(config)#interface vlan 100
+BRANCH-L3SW-2(config-if)#ip address 192.168.101.193 255.255.255.224
+BRANCH-L3SW-2(config-if)#ip helper-address 192.168.102.67
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+
+BRANCH-L3SW-2(config)#interface vlan 110
+BRANCH-L3SW-2(config-if)#ip address 192.168.101.225 255.255.255.224
+BRANCH-L3SW-2(config-if)#ip helper-address 192.168.102.67
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+
+BRANCH-L3SW-2(config)#interface vlan 120
+BRANCH-L3SW-2(config-if)#ip address 192.168.102.1 255.255.255.224
+BRANCH-L3SW-2(config-if)#ip helper-address 192.168.102.67
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+
+BRANCH-L3SW-2(config)#interface vlan 130
+BRANCH-L3SW-2(config-if)#ip address 192.168.102.33 255.255.255.224
+BRANCH-L3SW-2(config-if)#ip helper-address 192.168.102.67
+BRANCH-L3SW-2(config-if)#no shutdown
+BRANCH-L3SW-2(config-if)#exit
+
+BRANCH-L3SW-2(config)#do write
+
+! ========================================
+! END OF BRANCH-L3SW-2 CONFIGURATION
+! ========================================

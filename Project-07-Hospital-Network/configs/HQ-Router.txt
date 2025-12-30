@@ -1,0 +1,323 @@
+! ========================================
+! HQ-ROUTER CONFIGURATION
+! Health Services
+! Enterprise Network Project 7
+! ========================================
+
+! ========================================
+! STEP 1: INITIAL IP ADDRESSING
+! ========================================
+
+Router>enable
+Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! Configure GigabitEthernet0/1 (to HQ-ML-SW2)
+Router(config)#interface GigabitEthernet0/1
+Router(config-if)#ip address 192.168.102.86 255.255.255.252
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+! Configure GigabitEthernet0/0 (to HQ-ML-SW1)
+Router(config)#interface GigabitEthernet0/0
+Router(config-if)#ip address 192.168.102.82 255.255.255.252
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+! Configure GigabitEthernet0/2 (to Server Site Switch)
+Router(config)#interface GigabitEthernet0/2
+Router(config-if)#ip address 192.168.102.65 255.255.255.240
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+! Configure Serial0/2/0 (to Branch Router - VPN Primary)
+Router(config)#interface Serial0/2/0
+Router(config-if)#ip address 192.168.102.89 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+! Configure Serial0/1/0 (to ISP2)
+Router(config)#interface Serial0/1/0
+Router(config-if)#ip address 195.136.17.5 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+! Configure Serial0/2/1 (to ISP1)
+Router(config)#interface Serial0/2/1
+Router(config-if)#ip address 195.136.17.1 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+Router(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 2: BASIC DEVICE CONFIGURATION
+! ========================================
+
+Router>enable
+Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! Set Hostname
+Router(config)#hostname HQ-Router
+
+! Configure Banner Message
+HQ-Router(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+************************************************************
+*                    WARNING NOTICE                        *
+*                                                          *
+*   This system is for AUTHORIZED USERS ONLY.              *
+*                                                          *
+*   Unauthorized access is strictly prohibited.            *
+*   All activities are monitored and recorded.             *
+*                                                          *
+*   Disconnect IMMEDIATELY if you are not authorized.      *
+*                                                          *
+************************************************************
+#
+
+! Disable DNS lookup
+HQ-Router(config)#no ip domain-lookup
+
+! Configure Console Password
+HQ-Router(config)#line console 0
+HQ-Router(config-line)#password cisco
+HQ-Router(config-line)#login
+HQ-Router(config-line)#exit
+
+! Configure Enable Password
+HQ-Router(config)#enable password cisco
+
+! Encrypt Passwords
+HQ-Router(config)#service password-encryption
+
+! Save Configuration
+HQ-Router(config)#exit
+HQ-Router#write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 3: OSPF ROUTING CONFIGURATION
+! ========================================
+
+HQ-Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! Configure OSPF Process 10
+HQ-Router(config)#router ospf 10
+
+! Advertise Networks
+HQ-Router(config-router)#network 192.168.102.80 0.0.0.3 area 0
+HQ-Router(config-router)#network 192.168.102.84 0.0.0.3 area 0
+HQ-Router(config-router)#network 192.168.102.88 0.0.0.3 area 0
+HQ-Router(config-router)#network 192.168.102.64 0.0.0.15 area 0
+HQ-Router(config-router)#network 195.136.17.0 0.0.0.3 area 0
+HQ-Router(config-router)#network 195.136.17.4 0.0.0.3 area 0
+HQ-Router(config-router)#exit
+
+! ========================================
+! STEP 4: STATIC DEFAULT ROUTING
+! ========================================
+
+! Primary Default Route via ISP1
+HQ-Router(config)#ip route 0.0.0.0 0.0.0.0 195.136.17.2
+
+! Backup Default Route via ISP2 (AD=70)
+HQ-Router(config)#ip route 0.0.0.0 0.0.0.0 195.136.17.6 70
+
+! Save Configuration
+HQ-Router(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 5: ROUTER-ON-A-STICK (Server VLAN)
+! ========================================
+
+HQ-Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! Remove IP from physical interface
+HQ-Router(config)#interface GigabitEthernet0/2
+HQ-Router(config-if)#no ip address
+HQ-Router(config-if)#no shutdown
+HQ-Router(config-if)#exit
+
+! Configure Sub-interface for VLAN 70
+HQ-Router(config)#interface GigabitEthernet0/2.70
+HQ-Router(config-subif)#encapsulation dot1Q 70
+HQ-Router(config-subif)#ip address 192.168.102.65 255.255.255.240
+HQ-Router(config-subif)#no shutdown
+HQ-Router(config-subif)#exit
+
+! Save Configuration
+HQ-Router(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 6: NAT/PAT CONFIGURATION
+! ========================================
+
+HQ-Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! Configure NAT Outside Interfaces
+HQ-Router(config)#interface Serial0/1/0
+HQ-Router(config-if)#ip nat outside
+HQ-Router(config-if)#exit
+
+HQ-Router(config)#interface Serial0/2/1
+HQ-Router(config-if)#ip nat outside
+HQ-Router(config-if)#exit
+
+! Configure NAT Inside Interfaces
+HQ-Router(config)#interface range GigabitEthernet0/0-2
+HQ-Router(config-if-range)#ip nat inside
+HQ-Router(config-if-range)#exit
+
+! Configure PAT with Overload
+HQ-Router(config)#ip nat inside source list 1 interface Serial0/2/1 overload
+HQ-Router(config)#ip nat inside source list 1 interface Serial0/1/0 overload
+
+! Save Configuration
+HQ-Router(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 7: ACCESS CONTROL LIST FOR NAT
+! ========================================
+
+HQ-Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! Create Standard ACL to permit HQ Networks
+HQ-Router(config)#access-list 1 permit 192.168.100.0 0.0.0.63
+HQ-Router(config)#access-list 1 permit 192.168.100.64 0.0.0.63
+HQ-Router(config)#access-list 1 permit 192.168.100.128 0.0.0.63
+HQ-Router(config)#access-list 1 permit 192.168.100.192 0.0.0.63
+HQ-Router(config)#access-list 1 permit 192.168.101.0 0.0.0.63
+HQ-Router(config)#access-list 1 permit 192.168.101.64 0.0.0.63
+
+! Save Configuration
+HQ-Router(config)#do write
+Building configuration...
+[OK]
+
+! ========================================
+! STEP 8: ENABLE SECURITY LICENSE
+! ========================================
+
+HQ-Router>enable
+HQ-Router#configure terminal
+HQ-Router(config)#license boot module c2900 technology-package securityk9
+PLEASE READ THE FOLLOWING TERMS CAREFULLY...
+ACCEPT? [yes/no]: yes
+% use 'write' command to make license boot config take effect on next boot
+
+HQ-Router(config)#exit
+HQ-Router#write
+Building configuration...
+[OK]
+
+HQ-Router#reload
+Proceed with reload? [confirm]
+! Press ENTER and wait for router to reboot (30-60 seconds)
+
+! ========================================
+! STEP 9: IPSEC VPN CONFIGURATION
+! ========================================
+
+HQ-Router>enable
+Password: cisco
+HQ-Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+! ========================================
+! PHASE 1: ISAKMP POLICY
+! ========================================
+
+HQ-Router(config)#crypto isakmp policy 10
+HQ-Router(config-isakmp)#encryption aes 256
+HQ-Router(config-isakmp)#authentication pre-share
+HQ-Router(config-isakmp)#group 5
+HQ-Router(config-isakmp)#exit
+
+! Set Pre-Shared Key (peer = Branch Router Serial IP)
+HQ-Router(config)#crypto isakmp key VPN address 192.168.102.90
+
+! ========================================
+! PHASE 2: IPSEC TRANSFORM SET
+! ========================================
+
+HQ-Router(config)#crypto ipsec transform-set VPN_SET esp-aes esp-sha-hmac
+HQ-Router(cfg-crypto-trans)#exit
+
+! ========================================
+! CREATE CRYPTO MAP
+! ========================================
+
+HQ-Router(config)#crypto map VPN_MAP 10 ipsec-isakmp
+% NOTE: This new crypto map will remain disabled until a peer and a valid access list have been configured.
+
+HQ-Router(config-crypto-map)#description VPN Connection to Branch Network
+HQ-Router(config-crypto-map)#set peer 192.168.102.90
+HQ-Router(config-crypto-map)#set transform-set VPN_SET
+HQ-Router(config-crypto-map)#match address 110
+HQ-Router(config-crypto-map)#exit
+
+! ========================================
+! ACCESS CONTROL LIST FOR VPN TRAFFIC
+! ========================================
+
+! Define interesting traffic to encrypt
+HQ-Router(config)#access-list 110 permit ip 192.168.100.0 0.0.0.255 192.168.101.128 0.0.0.127
+HQ-Router(config)#access-list 110 permit ip 192.168.101.0 0.0.0.127 192.168.101.128 0.0.0.127
+
+! ========================================
+! APPLY CRYPTO MAP TO INTERFACE
+! ========================================
+
+HQ-Router(config)#interface Serial0/2/0
+HQ-Router(config-if)#crypto map VPN_MAP
+*Jan 3 07:18:01.823: %CRYPTO-6-ISAKMP_ON_OFF: ISAKMP is ON
+HQ-Router(config-if)#exit
+
+! Save Configuration
+HQ-Router(config)#do write
+Building configuration...
+[OK]
+HQ-Router(config)#exit
+
+! ========================================
+! VERIFICATION COMMANDS
+! ========================================
+
+! Verify Crypto Map
+HQ-Router#show crypto map
+
+! Expected Output:
+! interface: Serial0/2/0
+! Crypto map tag: VPN_MAP, local addr 192.168.102.89
+! protected vrf: (none)
+! local ident: (192.168.100.0/255.255.255.0/0/0)
+! remote ident: (192.168.101.128/255.255.255.128/0/0)
+! current_peer 192.168.102.90 port 500
+
+! Verify ISAKMP SA (after traffic)
+HQ-Router#show crypto isakmp sa
+
+! Verify IPsec SA (after traffic)
+HQ-Router#show crypto ipsec sa
+
+! ========================================
+! END OF HQ-ROUTER CONFIGURATION
+! ========================================
