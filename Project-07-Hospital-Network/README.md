@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🏥 Enterprise Network Project 7
-### Melbourne Health Services Network Infrastructure
+### Hospital Network Infrastructure
 
 [![Cisco Packet Tracer](https://img.shields.io/badge/Cisco-Packet_Tracer-1BA0D7?style=for-the-badge&logo=cisco&logoColor=white)](https://www.netacad.com/courses/packet-tracer)
 [![OSPF](https://img.shields.io/badge/Routing-OSPF-FF6B00?style=for-the-badge)](https://github.com)
