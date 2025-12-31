@@ -1,7 +1,7 @@
 ! ========================================
 ! HQ-L3SW-1 CONFIGURATION
 ! Layer 3 Switch - HQ Network
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 Switch>enable
