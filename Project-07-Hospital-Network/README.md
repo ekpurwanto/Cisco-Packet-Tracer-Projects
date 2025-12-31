@@ -706,14 +706,14 @@ no cdp run (on sensitive interfaces)
 
 1. **Clone the Repository**
 ```bash
-   git clone https://github.com/yourusername/enterprise-network-project-7.git
-   cd enterprise-network-project-7
+   git clone https://github.com/yourusername/Project-07-Hospital-Network.git
+   cd Project-07-Hospital-Network
 ```
 
 2. **Open Cisco Packet Tracer**
    - Launch Cisco Packet Tracer
    - File → Open
-   - Navigate to `Melbourne_Health_Services.pkt`
+   - Navigate to `Hospital-Network-Design.pkt`
 
 3. **Explore the Topology**
    - Review device configurations
