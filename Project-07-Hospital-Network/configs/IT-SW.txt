@@ -1,7 +1,7 @@
 ! ========================================
 ! IT-SW CONFIGURATION
 ! Access Layer Switch - IT Department
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
