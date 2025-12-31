@@ -1,7 +1,7 @@
 ! ========================================
 ! GWA-SW (Guest/Waiting Area Switch - HQ)
 ! Access Layer Switch - HQ VLAN 60
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 Switch>enable
