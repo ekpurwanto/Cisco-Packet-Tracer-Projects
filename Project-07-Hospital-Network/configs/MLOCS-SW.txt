@@ -1,7 +1,7 @@
 ! ========================================
 ! MLOCS-SW CONFIGURATION
 ! Access Layer Switch - MLOCS Department
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
