@@ -40,7 +40,7 @@
 
 ## 📋 Project Overview
 
-This project involves designing and implementing a secure, redundant enterprise network for **Melbourne Health Services**, a healthcare provider in Australia operating across two locations (Headquarters and Branch Hospital) within the same city, 20 kilometers apart.
+This project involves designing and implementing a secure, redundant enterprise network for **Health Services**, a healthcare provider in Australia operating across two locations (Headquarters and Branch Hospital) within the same city, 20 kilometers apart.
 
 The network follows industry best practices with a hierarchical design model, implementing advanced technologies including IPsec VPN tunneling, OSPF dynamic routing, centralized DHCP services, comprehensive wireless coverage, and multi-layered security features.
 
