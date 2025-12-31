@@ -1,7 +1,7 @@
 ! ========================================
 ! MK-SW CONFIGURATION
 ! Access Layer Switch - Marketing (MK) Department
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
