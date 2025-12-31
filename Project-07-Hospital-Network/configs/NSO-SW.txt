@@ -1,7 +1,7 @@
 ! ========================================
 ! NSO-SW CONFIGURATION
 ! Access Layer Switch - NSO Department
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
