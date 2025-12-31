@@ -1,7 +1,7 @@
 ! ========================================
 ! MRM-SW CONFIGURATION
 ! Access Layer Switch - MRM Department
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
