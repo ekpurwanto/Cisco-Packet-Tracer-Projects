@@ -1,7 +1,7 @@
 ! ========================================
 ! ISP-2 CONFIGURATION
 ! Internet Service Provider Router 2
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
