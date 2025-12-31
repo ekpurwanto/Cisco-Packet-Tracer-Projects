@@ -1,7 +1,7 @@
 ! ========================================
 ! ISP-1 CONFIGURATION
 ! Internet Service Provider Router 1
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 ! ========================================
