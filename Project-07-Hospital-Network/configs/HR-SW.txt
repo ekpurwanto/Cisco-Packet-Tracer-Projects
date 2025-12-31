@@ -1,7 +1,7 @@
 ! ========================================
 ! HR-SW (Human Resources Switch)
 ! Access Layer Switch - Branch VLAN 100
-! Melbourne Health Services - Project 7
+! Health Services - Project 7
 ! ========================================
 
 Switch>enable
