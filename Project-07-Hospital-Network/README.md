@@ -1540,13 +1540,6 @@ Special thanks to:
 
 ---
 
-### Learning Path
-
-1. **Beginner:** Enterprise Projects 1-3
-2. **Intermediate:** Enterprise Projects 4-5
-3. **Advanced:** Enterprise Projects 6-7
-4. **Expert:** Enterprise Project 8 (VoIP Implementation - Coming Soon)
-
 ### Recommended Reading
 
 - "CCNA 200-301 Official Cert Guide" - Wendell Odom
