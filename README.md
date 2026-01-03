@@ -60,18 +60,38 @@ Actively building a professional portfolio aligned with CCNA certification and N
 
 Each directory represents a standalone network simulation project and contains Cisco Packet Tracer `.pkt` files and documentation.
 
-Cisco-Packet-Tracer-Projects
-│
-├── Project-01-Accounts-Delivery
-├── Project-02-Branch-Network
-├── Project-03-Enterprise-Network-Design
-├── Project-04-Campus-Network
-├── Project-05-Bank-Network
-├── Project-06-Enterprise-Network-Infrastructure-Design
-├── Project-07-Hospital-Network
-└── LICENSE
+Cisco-Packet-Tracer-Projects:
+  projects:
+    Project-01-Accounts-Delivery:
+      type: LAN
+      focus: Accounts and Delivery departmental network
+      tools: Cisco Packet Tracer
+    Project-02-Branch-Network:
+      type: Branch Office Network
+      focus: Subnetting and routing
+      tools: Cisco Packet Tracer
+    Project-03-Enterprise-Network-Design:
+      type: Enterprise Network
+      focus: VLAN and inter-VLAN routing
+      tools: Cisco Packet Tracer
+    Project-04-Campus-Network:
+      type: Campus Network
+      focus: Multi-department segmentation
+      tools: Cisco Packet Tracer
+    Project-05-Bank-Network:
+      type: Financial Institution Network
+      focus: Enterprise-grade segmentation
+      tools: Cisco Packet Tracer
+    Project-06-Enterprise-Network-Infrastructure-Design:
+      type: Enterprise Infrastructure
+      focus: Advanced routing and switching
+      tools: Cisco Packet Tracer
+    Project-07-Hospital-Network:
+      type: Hospital Network
+      focus: Department-based connectivity
+      tools: Cisco Packet Tracer
+  license: MIT
 
-yaml
 Copy code
 
 ---
